@@ -650,7 +650,7 @@ public final class Testartifact extends JavaPlugin implements Listener
         }
         if(e.getPlayer().isOp())
         {
-            e.setJoinMessage( ChatColor.RED+e.getPlayer().getName()+ChatColor.WHITE+"님 안녕하세요.");
+            e.setJoin5Message( ChatColor.RED+e.getPlayer().getName()+ChatColor.WHITE+"님 안녕하세요.");
         }
         else
         {

@@ -62,6 +62,8 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 public final class Hypixel extends JavaPlugin implements Listener{
     ConsoleCommandSender consol = Bukkit.getConsoleSender();
+    HashMap<UUID, Integer> diamond = new HashMap<UUID, Integer>();
+    HashMap<UUID, Integer> stone = new HashMap<UUID, Integer>();
     @Override
     public void onEnable()
     {
@@ -84,6 +86,9 @@ public final class Hypixel extends JavaPlugin implements Listener{
     {
         consol.sendMessage( ChatColor.YELLOW + "[사람이 들어옴]");
         Player player = e.getPlayer();
+        UUID uuid = player.getUniqueId();
+        diamond.put(uuid,0);
+        stone.put(uuid,0);
         e.setJoinMessage("누군가 들어왔다!!!");
         if(player.hasResourcePack())
         {
@@ -105,8 +110,24 @@ public final class Hypixel extends JavaPlugin implements Listener{
     @EventHandler
     public void player(BlockBreakEvent e)
     {
-        e.getPlayer()
-        e.getBlock().getType()
+        UUID uuid = e.getPlayer().getUniqueId();
+        if(e.getBlock().getType()==Material.DIAMOND_ORE)
+        {
+            e.getPlayer().sendMessage("다이아");
+            e.getPlayer().sendMessage(diamond.get(uuid).toString());
+            diamond.put(uuid,diamond.get(uuid)+1);
+            if(((diamond.get(uuid)/stone.get(uuid))*100)>5.2)
+            {
+                e.getPlayer().sendMessage("핵");
+            }
+        }
+        if(e.getBlock().getType()==Material.STONE)
+        {
+            stone.put(uuid,stone.get(uuid)+1);
+            e.getPlayer().sendMessage("돌");
+            e.getPlayer().sendMessage(stone.get(uuid).toString());
+
+        }
     }
     @Override
     public void onDisable()
