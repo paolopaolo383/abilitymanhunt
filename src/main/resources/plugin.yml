@@ -1,0 +1,4 @@
+name: Hypixel
+version: ${project.version}
+main: hypixel.hypixel.Hypixel
+api-version: 1.16
