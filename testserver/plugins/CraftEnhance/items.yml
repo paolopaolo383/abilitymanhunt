@@ -1,0 +1,412 @@
+GOLDEN_APPLE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: GOLDEN_APPLE
+GOLD_INGOT:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: GOLD_INGOT
+APPLE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: APPLE
+IRON_PICKAXE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_PICKAXE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      DIG_SPEED: 1
+    repair-cost: 1
+IRON_INGOT:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_INGOT
+COAL:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: COAL
+STICK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: STICK
+IRON_INGOT1:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_INGOT
+  amount: 10
+IRON_ORE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_ORE
+quick pick:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_PICKAXE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"quick pick"}'
+    enchants:
+      DIG_SPEED: 1
+    repair-cost: 1
+GOLD_INGOT1:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: GOLD_INGOT
+  amount: 10
+GOLD_ORE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: GOLD_ORE
+가벼운 모루:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ANVIL
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"가벼운 모루"}'
+IRON_BLOCK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_BLOCK
+IRON_HELMET:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+    repair-cost: 1
+REDSTONE_TORCH:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: REDSTONE_TORCH
+Apprentice Sword:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"Apprentice Sword"}'
+    enchants:
+      DAMAGE_ALL: 3
+    repair-cost: 1
+REDSTONE_BLOCK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: REDSTONE_BLOCK
+IRON_SWORD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: IRON_SWORD
+Apprentice Bow:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: BOW
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"Apprentice Bow"}'
+    enchants:
+      ARROW_DAMAGE: 3
+    repair-cost: 1
+STRING:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: STRING
+ENCHANTED_BOOK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ENCHANTED_BOOK
+  meta:
+    ==: ItemMeta
+    meta-type: ENCHANTED
+    stored-enchants:
+      DAMAGE_ALL: 1
+FLINT:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: FLINT
+PAPER:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: PAPER
+ENCHANTED_BOOK1:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ENCHANTED_BOOK
+  meta:
+    ==: ItemMeta
+    meta-type: ENCHANTED
+    stored-enchants:
+      PROTECTION_ENVIRONMENTAL: 1
+APPLE1:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: APPLE
+  amount: 2
+BONE_MEAL:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: BONE_MEAL
+Dragon Sword:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"Dragon Sword"}'
+    enchants:
+      FIRE_ASPECT: 2
+      DAMAGE_ALL: 2
+    repair-cost: 3
+BLAZE_POWDER:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: BLAZE_POWDER
+DIAMOND_SWORD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIAMOND_SWORD
+제작자의 마검:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIAMOND_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"제작자의 마검"}'
+    enchants:
+      DAMAGE_ALL: 5
+    repair-cost: 63
+WOODEN_SWORD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: WOODEN_SWORD
+STONE_SWORD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: STONE_SWORD
+GOLDEN_SWORD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: GOLDEN_SWORD
+NETHERITE_SWORD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_SWORD
+김기오의 마활:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: BOW
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"김기오의 마활"}'
+    enchants:
+      ARROW_DAMAGE: 10
+ANCIENT_DEBRIS:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ANCIENT_DEBRIS
+BOW:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: BOW
+DIAMOND_BLOCK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIAMOND_BLOCK
+이시연의 잔해:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: REDSTONE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"이시연의 잔해"}'
+DIRT:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIRT
+이시연의 피:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: REDSTONE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"이시연의 피"}'
+NETHERRACK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERRACK
+울트라캡슝짱짱제작자이예준존멋존잘프로그래머이예준의 검:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_SWORD
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"울트라캡슝짱짱제작자이예준존멋존잘프로그래머이예준의 검"}'
+    enchants:
+      FIRE_ASPECT: 2
+      DAMAGE_ALL: 5
+    repair-cost: 3
+DRAGON_HEAD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DRAGON_HEAD
+PLAYER_HEAD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: PLAYER_HEAD
+ZOMBIE_HEAD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ZOMBIE_HEAD
+CREEPER_HEAD:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: CREEPER_HEAD
+울트라캡슝짱짱제작자이예준존멋존잘프로그래머이예준의 갑옷:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"울트라캡슝짱짱제작자이예준존멋존잘프로그래머이예준의 갑옷"}'
+    enchants:
+      PROTECTION_ENVIRONMENTAL: 4
+    repair-cost: 1
+NETHERITE_HELMET:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_HELMET
+NETHERITE_LEGGINGS:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_LEGGINGS
+NETHERITE_CHESTPLATE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_CHESTPLATE
+NETHERITE_BOOTS:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_BOOTS
+이시연의 갑옷:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: CHAINMAIL_HELMET
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"이시연의 갑옷"}'
+    Damage: 164
+배민기의 패션스타일:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"배민기의 패션스타일"}'
+DANDELION:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DANDELION
+WHEAT_SEEDS:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: WHEAT_SEEDS
+떨어질 때도 고요하다:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIAMOND_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"떨어질 때도 고요하다"}'
+    enchants:
+      PROTECTION_FALL: 4
+    repair-cost: 1
+ENDER_PEARL:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ENDER_PEARL
+WATER_BUCKET:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: WATER_BUCKET
+초월자의 갑옷:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIAMOND_CHESTPLATE
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"초월자의 갑옷"}'
+    enchants:
+      THORNS: 10000
+배민기의 패션스타일1:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: NETHERITE_LEGGINGS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"배민기의 패션스타일"}'
+    Damage: 2
+떨어질 때도 고요하다1:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: DIAMOND_BOOTS
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"떨어질 때도 고요하다"}'
+    enchants:
+      PROTECTION_FALL: 4
+    repair-cost: 1
+    Damage: 2
+간디의 화살:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: TIPPED_ARROW
+  amount: 64
+  meta:
+    ==: ItemMeta
+    meta-type: POTION
+    display-name: '{"text":"간디의 화살"}'
+    potion-type: minecraft:strong_regeneration
+COBBLESTONE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: COBBLESTONE
+이시연의 피가 묻은 돌:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: MOSSY_COBBLESTONE
+  amount: 64
+  meta:
+    ==: ItemMeta
+    meta-type: UNSPECIFIC
+    display-name: '{"text":"이시연의 피가 묻은 돌"}'
+ENCHANTED_GOLDEN_APPLE:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: ENCHANTED_GOLDEN_APPLE
+GOLD_BLOCK:
+  ==: org.bukkit.inventory.ItemStack
+  v: 2586
+  type: GOLD_BLOCK
