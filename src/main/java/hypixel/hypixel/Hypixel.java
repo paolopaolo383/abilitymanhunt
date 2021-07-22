@@ -60,7 +60,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-public final class Hypixel extends JavaPlugin implements Listener{
+public final class Hypixel extends JavaPlugin implements Listener
+{
+    String game="none";
+    int min, sec, tick;
     ConsoleCommandSender consol = Bukkit.getConsoleSender();
     HashMap<UUID, Integer> diamond = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> stone = new HashMap<UUID, Integer>();
@@ -69,17 +72,34 @@ public final class Hypixel extends JavaPlugin implements Listener{
     {
         getServer().getPluginManager().registerEvents(this, this);
         consol.sendMessage( ChatColor.AQUA + "[하이픽셀 플러그인 활성화.]");
-        getLogger().info("흠...");
+        new BukkitRunnable(){
+            @Override
+            public void run() {
+
+            }
+
+        }.runTaskTimer(this, 0L, 1L);
     }
     @EventHandler
-    public void move(PlayerInteractEvent e)
+    public void leave(PlayerQuitEvent e)
     {
-        Player player = e.getPlayer();
-        if(player.hasResourcePack())
+        e.setQuitMessage("아... 그는 갔습니다.");
+        getServer().sendMessage(Component.text("dwdwdwdwweddw"));
+        if(e.getPlayer().getGameMode()==GameMode.SURVIVAL)
         {
-            player.sendMessage(Component.text("리소스팩 있음"));
 
+            if(game=="uhc")
+            {
+
+                e.getPlayer().setHealth(-1);
+            }
         }
+
+    }
+    @EventHandler
+    public void dead(PlayerDeathEvent e)
+    {
+        getServer().sendMessage(Component.text(ChatColor.RED+"사람이 죽었다"));
     }
     @EventHandler
     public void join(PlayerJoinEvent e)
@@ -90,16 +110,20 @@ public final class Hypixel extends JavaPlugin implements Listener{
         diamond.put(uuid,0);
         stone.put(uuid,0);
         e.setJoinMessage("누군가 들어왔다!!!");
+        if(game=="uhc")
+        {
+            player.getInventory().clear();
+            player.setGameMode(GameMode.SPECTATOR);
+        }
         if(player.hasResourcePack())
         {
-            player.sendMessage(Component.text("리소스팩 있음"));
 
         }
         else if(!player.hasResourcePack())
         {
-            player.sendMessage(Component.text("리소스팩 없음"));
+            player.sendMessage(Component.text("리소스팩이 없습니다. 이런 리소스펙은 어떠세요?"));
+            player.setResourcePack("https://blogattach.naver.com/ff6ae356407475c0ef0b645a6281fe8c2c768fe1/20210721_258_blogfile/481926paolo_1626870902838_87x7aT_zip/VanillaTweaks_r260907.zip");
         }
-        player.setResourcePack("https://blogattach.naver.com/ff6ae356407475c0ef0b645a6281fe8c2c768fe1/20210721_258_blogfile/481926paolo_1626870902838_87x7aT_zip/VanillaTweaks_r260907.zip");
 
     }
     @EventHandler
@@ -110,28 +134,34 @@ public final class Hypixel extends JavaPlugin implements Listener{
     @EventHandler
     public void player(BlockBreakEvent e)
     {
+
+        double rate;
         UUID uuid = e.getPlayer().getUniqueId();
         if(e.getBlock().getType()==Material.DIAMOND_ORE)
         {
-            e.getPlayer().sendMessage("다이아");
-            e.getPlayer().sendMessage(diamond.get(uuid).toString());
             diamond.put(uuid,diamond.get(uuid)+1);
-            if(((diamond.get(uuid)/stone.get(uuid))*100)>5.2)
+            rate = diamond.get(uuid)/(float)stone.get(uuid);
+            if((rate*100)>5.2&&min>10&&game=="uhc")
             {
-                e.getPlayer().sendMessage("핵");
+                //핵 판정
             }
         }
         if(e.getBlock().getType()==Material.STONE)
         {
             stone.put(uuid,stone.get(uuid)+1);
-            e.getPlayer().sendMessage("돌");
-            e.getPlayer().sendMessage(stone.get(uuid).toString());
-
         }
     }
     @Override
     public void onDisable()
     {
 
+    }
+
+
+
+    @Override
+    public boolean onCommand(CommandSender sendera, Command command,String s,  String[] args)
+    {
+        return true;
     }
 }
