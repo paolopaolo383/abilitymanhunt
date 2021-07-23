@@ -72,9 +72,11 @@ public final class Hypixel extends JavaPlugin implements Listener
     {
         getServer().getPluginManager().registerEvents(this, this);
         consol.sendMessage( ChatColor.AQUA + "[하이픽셀 플러그인 활성화.]");
-        new BukkitRunnable(){
+        new BukkitRunnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
 
             }
 
@@ -160,8 +162,11 @@ public final class Hypixel extends JavaPlugin implements Listener
 
 
     @Override
-    public boolean onCommand(CommandSender sendera, Command command,String s,  String[] args)
+    public boolean onCommand(CommandSender sender, Command command,String s,  String[] args)
     {
+        Player player = (Player) sender;
+        player.sendMessage(Component.text(command.getName()));
+        
         return true;
     }
 }
