@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Biome;
 import org.bukkit.block.Block;
+import org.bukkit.WorldCreator.*;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.boss.DragonBattle;
 import org.bukkit.command.Command;
@@ -62,9 +63,22 @@ import org.jetbrains.annotations.Nullable;
 import javax.swing.*;
 public final class Hypixel extends JavaPlugin implements Listener
 {
+    private Scoreboard board;
+    private Objective obj;
+    private Score one;
+    private Score two;
+    private Score three;
+    private Score four;
+    private Score five;
+    private Score six;
+    private Score seven;
+    int totaltick=0;
+    boolean isdropinghead = false;
+    boolean isgaming=false;
     String game="none";
     int min, sec, tick;
     ConsoleCommandSender consol = Bukkit.getConsoleSender();
+    HashMap<UUID, Integer> hack = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> diamond = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> stone = new HashMap<UUID, Integer>();
     @Override
@@ -77,23 +91,143 @@ public final class Hypixel extends JavaPlugin implements Listener
             @Override
             public void run()
             {
+                if(isgaming)
+                {
+                    totaltick++;
+                    tick++;
+                    if (tick==20)
+                    {
+                        tick=0;
+                        sec++;
+                    }
+                    if (sec==60)
+                    {
+                        sec=0;
+                        min++;
+                    }
 
+
+                    if(min==10&&sec==0&&tick==0)
+                    {
+                        isdropinghead = true;
+                        getServer().getWorld("uhc").getWorldBorder().setSize(50, 2000);
+                        List play = getServer().getWorld("uhc").getPlayers();
+                        int q = play.size();
+                        for(int i = 0;i<q;i++)
+                        {
+                            Player pl = (Player) play.get(i);
+                            pl.sendTitle("자기장이 줄어듭니다","평화시간 끝", 0,40,20);
+                        }
+                    }
+                    if(min==45&&sec==0&&tick==0)
+                    {
+                        isdropinghead = true;
+                        List play = getServer().getWorld("uhc").getPlayers();
+                        int q = play.size();
+                        for(int i = 0;i<q;i++)
+                        {
+
+                            Player pl = (Player) play.get(i);
+                            pl.sendTitle("자기장이 줄어듭니다","독 효과가 부여됩니다", 0,40,20);
+                            if(pl.getGameMode()==GameMode.SURVIVAL)
+                            {
+                                pl.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 1000000000,2));
+                            }
+
+                        }
+                        getServer().getWorld("uhc").getWorldBorder().setSize(5, 180);
+                        //타이틀
+                    }
+
+
+                }
+                else
+                {
+
+                    totaltick = 0;
+                    //getServer().getWorld("world").getWorldBorder().setSize(3000);
+                    tick=0;
+                    sec=0;
+                    min=0;
+                }
             }
 
         }.runTaskTimer(this, 0L, 1L);
     }
+
+
+
+
+
+
+    public void uhcscboard(Player player)
+    {
+        int p = 1;
+        ScoreboardManager sm = Bukkit.getScoreboardManager();
+        board = sm.getNewScoreboard();
+        obj = board.registerNewObjective("totalplaytime", "dummy");
+        obj.setDisplayName(ChatColor.AQUA +"UHC");
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+
+        one = obj.getScore(ChatColor.GREEN+String.valueOf(min)+":"+String.valueOf(sec));
+        one.setScore(p);
+        p++;
+        two = obj.getScore(ChatColor.WHITE+"총 플레이 시간");
+        two.setScore(p);
+        p++;
+        if(min<10)
+        {
+            int ti = 600-totaltick/20;
+
+            three = obj.getScore(ChatColor.GREEN+String.valueOf((int)(ti/60))+":"+String.valueOf((ti%60)));
+        }
+        else if(min<45)
+        {
+            int ti = 2700-totaltick/20;
+
+            three = obj.getScore(ChatColor.GREEN+String.valueOf((int)(ti/60))+":"+String.valueOf((ti%60)));
+        }
+        else if(min<50)
+        {
+            int ti = 3000-totaltick/20;
+
+            three = obj.getScore(ChatColor.GREEN+String.valueOf((int)(ti/60))+":"+String.valueOf((ti%60)));
+        }
+        three.setScore(p);
+        p++;
+        if(min<10)
+        {
+            four= obj.getScore(ChatColor.WHITE+"평화시간 끝나기");
+        }
+        else if(min<45)
+        {
+            four= obj.getScore(ChatColor.WHITE+"데스메치까지");
+        }
+        else if(min<50)
+        {
+            four= obj.getScore(ChatColor.WHITE+"게임 끝까지");
+        }
+        four.setScore(p);
+        p++;
+        player.setScoreboard(board);
+    }
+
+
+
+
+
     @EventHandler
     public void leave(PlayerQuitEvent e)
     {
+
         e.setQuitMessage("아... 그는 갔습니다.");
-        getServer().sendMessage(Component.text("dwdwdwdwweddw"));
         if(e.getPlayer().getGameMode()==GameMode.SURVIVAL)
         {
 
-            if(game=="uhc")
+            if(isgaming)
             {
-
-                e.getPlayer().setHealth(-1);
+                e.getPlayer().setHealth(0);
             }
         }
 
@@ -101,7 +235,19 @@ public final class Hypixel extends JavaPlugin implements Listener
     @EventHandler
     public void dead(PlayerDeathEvent e)
     {
+
         getServer().sendMessage(Component.text(ChatColor.RED+"사람이 죽었다"));
+        if(e.getEntity().getType()==EntityType.PLAYER)
+        {
+            if(isdropinghead&&isgaming)
+            {
+                getServer().getWorld("uhc").dropItemNaturally(e.getEntity().getLocation(),new ItemStack(Material.PLAYER_HEAD,1));
+                e.getEntity().setGameMode(GameMode.SPECTATOR);
+            }
+
+        }
+
+
     }
     @EventHandler
     public void join(PlayerJoinEvent e)
@@ -111,12 +257,19 @@ public final class Hypixel extends JavaPlugin implements Listener
         UUID uuid = player.getUniqueId();
         diamond.put(uuid,0);
         stone.put(uuid,0);
+        hack.put(uuid,0);
         e.setJoinMessage("누군가 들어왔다!!!");
-        if(game=="uhc")
+        if(game=="uhc"&&isgaming&&isdropinghead)
         {
-            player.getInventory().clear();
             player.setGameMode(GameMode.SPECTATOR);
         }
+        else if(!isgaming)
+        {
+            e.getPlayer().setGameMode(GameMode.SURVIVAL);
+            e.getPlayer().teleport(getServer().getWorld("world").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
+        }
+
+
         if(player.hasResourcePack())
         {
 
@@ -146,6 +299,8 @@ public final class Hypixel extends JavaPlugin implements Listener
             if((rate*100)>5.2&&min>10&&game=="uhc")
             {
                 //핵 판정
+                e.getPlayer().kick(Component.text("핵 쓰지 마세요!"));
+
             }
         }
         if(e.getBlock().getType()==Material.STONE)
@@ -165,8 +320,101 @@ public final class Hypixel extends JavaPlugin implements Listener
     public boolean onCommand(CommandSender sender, Command command,String s,  String[] args)
     {
         Player player = (Player) sender;
-        player.sendMessage(Component.text(command.getName()));
-        
+        if(command.getName().equalsIgnoreCase("uhc"))
+        {
+            sender.sendMessage(ChatColor.AQUA+"[Hypixel] 월드 생성중");
+            UHCWorldcreater();
+        }
         return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void UHCWorldcreater()
+    {
+
+        WorldCreator seed = new WorldCreator("uhc");
+        World world = seed.createWorld();
+        List players = getServer().getWorld("world").getPlayers();
+
+        for (int i = 0;i<players.size();i++)
+        {
+            //월드 세틸
+            world.setPVP(false);
+            world.setDifficulty(Difficulty.PEACEFUL);
+            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+            world.setGameRule(GameRule.NATURAL_REGENERATION,false);
+            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN,true);
+
+
+            world.getWorldBorder().setCenter(0,0);
+            world.getWorldBorder().setDamageAmount(2);
+            world.getWorldBorder().setWarningDistance(100);
+            world.getWorldBorder().setDamageBuffer(0);
+            world.getWorldBorder().setSize(1000);
+
+
+            //플레이어 세팅
+            Player pl = (Player)players.get(i);
+            Random createRandom = new Random();
+            int xi = createRandom.nextInt(1000);
+            xi-=500;
+            int zi = createRandom.nextInt(1000);
+            zi-=500;
+            pl.teleport(world.getHighestBlockAt(xi, zi).getLocation().add(0,1,0));
+
+
+            pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
+            pl.setGameMode(GameMode.SURVIVAL);
+
+
+            pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,300, 255,true));
+            pl.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE,12000, 255,true));
+
+
+            pl.getInventory().clear();
+            ItemStack firstitem = new ItemStack(Material.STONE_PICKAXE,1);
+            pl.getInventory().addItem(firstitem);
+            firstitem = new ItemStack(Material.STONE_AXE,1);
+            pl.getInventory().addItem(firstitem);
+            firstitem = new ItemStack(Material.STONE_SWORD,1);
+            pl.getInventory().addItem(firstitem);
+            firstitem = new ItemStack(Material.STONE_SHOVEL,1);
+            pl.getInventory().addItem(firstitem);
+
+
+
+            //플러그인 변수 세팅
+
+            game = "uhc";
+            isdropinghead = false;
+
+
+
+
+        }
+        isgaming = true;
+
     }
 }

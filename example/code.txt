@@ -708,7 +708,6 @@ public final class Testartifact extends JavaPlugin implements Listener
                     firstitem = new ItemStack(Material.COOKED_BEEF, 64);
                     player.getInventory().addItem(firstitem);
 
-                    player.setBedSpawnLocation(getServer().getWorld("world").getHighestBlockAt(xi, zi).getLocation().add(0,1,0));
                     player.teleport(getServer().getWorld("world").getHighestBlockAt(xi, zi).getLocation().add(0,1,0));
 
                 }
