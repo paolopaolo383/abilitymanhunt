@@ -34,6 +34,7 @@ import org.bukkit.generator.BlockPopulator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.plugin.Plugin;
@@ -86,6 +87,9 @@ public final class Hypixel extends JavaPlugin implements Listener
     {
         getServer().getPluginManager().registerEvents(this, this);
         consol.sendMessage( ChatColor.AQUA + "[하이픽셀 플러그인 활성화.]");
+        consol.sendMessage( ChatColor.AQUA + "[레시피 제작중]");
+        ShapedRecipe newrecipe = new ShapedRecipe(new ItemStack(Material.STONE)).shape(new String[]{"   "," @ ","@@@"}).setIngredient('@',Material.IRON_INGOT);//bukkit:8f08cedb-765c-43bc-b2b4-a87a56a267ab
+        getServer().addRecipe(newrecipe);
         new BukkitRunnable()
         {
             @Override
@@ -93,6 +97,13 @@ public final class Hypixel extends JavaPlugin implements Listener
             {
                 if(isgaming)
                 {
+                    List players = getServer().getWorld("uhc").getPlayers();
+                    int top = players.size();
+                    for(int i = 0;i<top;i++)
+                    {
+                        Player pl = (Player) players.get(i);
+                        uhcscboard(pl);
+                    }
                     totaltick++;
                     tick++;
                     if (tick==20)
@@ -109,6 +120,7 @@ public final class Hypixel extends JavaPlugin implements Listener
 
                     if(min==10&&sec==0&&tick==0)
                     {
+                        getServer().getWorld("uhc").setPVP(true);
                         isdropinghead = true;
                         getServer().getWorld("uhc").getWorldBorder().setSize(50, 2000);
                         List play = getServer().getWorld("uhc").getPlayers();
@@ -121,25 +133,20 @@ public final class Hypixel extends JavaPlugin implements Listener
                     }
                     if(min==45&&sec==0&&tick==0)
                     {
-                        isdropinghead = true;
                         List play = getServer().getWorld("uhc").getPlayers();
                         int q = play.size();
                         for(int i = 0;i<q;i++)
                         {
-
                             Player pl = (Player) play.get(i);
                             pl.sendTitle("자기장이 줄어듭니다","독 효과가 부여됩니다", 0,40,20);
                             if(pl.getGameMode()==GameMode.SURVIVAL)
                             {
                                 pl.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 1000000000,2));
                             }
-
                         }
                         getServer().getWorld("uhc").getWorldBorder().setSize(5, 180);
                         //타이틀
                     }
-
-
                 }
                 else
                 {
@@ -149,6 +156,13 @@ public final class Hypixel extends JavaPlugin implements Listener
                     tick=0;
                     sec=0;
                     min=0;
+                    List players = getServer().getWorld("world").getPlayers();
+                    int top = players.size();
+                    for(int i = 0;i<top;i++)
+                    {
+                        Player pl = (Player) players.get(i);
+                        pl.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+                    }
                 }
             }
 
@@ -211,6 +225,11 @@ public final class Hypixel extends JavaPlugin implements Listener
         four.setScore(p);
         p++;
         player.setScoreboard(board);
+
+
+
+
+
     }
 
 
@@ -230,7 +249,23 @@ public final class Hypixel extends JavaPlugin implements Listener
                 e.getPlayer().setHealth(0);
             }
         }
-
+        Player Winner = null;
+        int sur = 0;
+        List players = getServer().getWorld("uhc").getPlayers();
+        int top = players.size();
+        for(int i = 0;i<top;i++)
+        {
+            Player pl = (Player) players.get(i);
+            if(pl.getGameMode()==GameMode.SURVIVAL)
+            {
+                sur++;
+                Winner = (Player) pl;
+            }
+        }
+        if(sur==1)
+        {
+            setGame((Player)Winner);
+        }
     }
     @EventHandler
     public void dead(PlayerDeathEvent e)
@@ -246,19 +281,38 @@ public final class Hypixel extends JavaPlugin implements Listener
             }
 
         }
-
+        Player Winner = null;
+        int sur = 0;
+        List players = getServer().getWorld("uhc").getPlayers();
+        int top = players.size();
+        for(int i = 0;i<top;i++)
+        {
+            Player pl = (Player) players.get(i);
+            if(pl.getGameMode()==GameMode.SURVIVAL)
+            {
+                sur++;
+                Winner = (Player) pl;
+            }
+        }
+        if(sur==1)
+        {
+            setGame((Player)Winner);
+        }
 
     }
     @EventHandler
     public void join(PlayerJoinEvent e)
     {
+
         consol.sendMessage( ChatColor.YELLOW + "[사람이 들어옴]");
         Player player = e.getPlayer();
+        player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(500);
         UUID uuid = player.getUniqueId();
         diamond.put(uuid,0);
         stone.put(uuid,0);
         hack.put(uuid,0);
         e.setJoinMessage("누군가 들어왔다!!!");
+        player.sendMessage(ChatColor.RED+"서버 소개\n"+"공격딜레이"+ChatColor.WHITE+"가 없습니다.\n/uhc명령어를 통해 게임을 시작할 수 있습니다.\n특별 레시피가 있습니다.\n레시피는 ");
         if(game=="uhc"&&isgaming&&isdropinghead)
         {
             player.setGameMode(GameMode.SPECTATOR);
@@ -269,21 +323,26 @@ public final class Hypixel extends JavaPlugin implements Listener
             e.getPlayer().teleport(getServer().getWorld("world").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
         }
 
-
-        if(player.hasResourcePack())
+    }
+    public void setGame(Player winner)
+    {
+        winner.setGlowing(true);
+        List players = getServer().getWorld("uhc").getPlayers();
+        int top = players.size();
+        for(int i = 0;i<top;i++)
         {
-
-        }
-        else if(!player.hasResourcePack())
-        {
-            player.sendMessage(Component.text("리소스팩이 없습니다. 이런 리소스펙은 어떠세요?"));
-            player.setResourcePack("https://blogattach.naver.com/ff6ae356407475c0ef0b645a6281fe8c2c768fe1/20210721_258_blogfile/481926paolo_1626870902838_87x7aT_zip/VanillaTweaks_r260907.zip");
+            Player pl = (Player) players.get(i);
+            pl.resetTitle();
+            pl.sendTitle(winner.getName(),"승리!", 0,100,40);
+            pl.teleport(getServer().getWorld("uhc").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
+            pl.setGameMode(GameMode.SURVIVAL);
         }
 
     }
     @EventHandler
     public void playerchat(PlayerChatEvent e)
     {
+        e.getPlayer().sendMessage("게임중에는 채팅을 칠 수 없습니다.");
         e.setCancelled(true);
     }
     @EventHandler
@@ -341,41 +400,33 @@ public final class Hypixel extends JavaPlugin implements Listener
 
 
 
-
-
-
-
-
-
-
-
-
-
     public void UHCWorldcreater()
     {
 
+
         WorldCreator seed = new WorldCreator("uhc");
         World world = seed.createWorld();
-        List players = getServer().getWorld("world").getPlayers();
 
+        world.setPVP(false);
+
+        world.setDifficulty(Difficulty.PEACEFUL);
+        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        world.setGameRule(GameRule.NATURAL_REGENERATION,false);
+        world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN,true);
+
+
+        world.getWorldBorder().setCenter(0,0);
+        world.getWorldBorder().setDamageAmount(2);
+        world.getWorldBorder().setWarningDistance(100);
+        world.getWorldBorder().setDamageBuffer(0);
+        world.getWorldBorder().setSize(1000);
+
+        game = "uhc";
+        isdropinghead = false;
+
+        List players = getServer().getWorld("world").getPlayers();
         for (int i = 0;i<players.size();i++)
         {
-            //월드 세틸
-            world.setPVP(false);
-            world.setDifficulty(Difficulty.PEACEFUL);
-            world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            world.setGameRule(GameRule.NATURAL_REGENERATION,false);
-            world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN,true);
-
-
-            world.getWorldBorder().setCenter(0,0);
-            world.getWorldBorder().setDamageAmount(2);
-            world.getWorldBorder().setWarningDistance(100);
-            world.getWorldBorder().setDamageBuffer(0);
-            world.getWorldBorder().setSize(1000);
-
-
-            //플레이어 세팅
             Player pl = (Player)players.get(i);
             Random createRandom = new Random();
             int xi = createRandom.nextInt(1000);
@@ -402,16 +453,6 @@ public final class Hypixel extends JavaPlugin implements Listener
             pl.getInventory().addItem(firstitem);
             firstitem = new ItemStack(Material.STONE_SHOVEL,1);
             pl.getInventory().addItem(firstitem);
-
-
-
-            //플러그인 변수 세팅
-
-            game = "uhc";
-            isdropinghead = false;
-
-
-
 
         }
         isgaming = true;
