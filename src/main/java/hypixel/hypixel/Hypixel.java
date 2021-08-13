@@ -2,9 +2,12 @@ package hypixel.hypixel;
 import com.destroystokyo.paper.HeightmapType;
 import com.destroystokyo.paper.event.server.ServerTickStartEvent;
 import io.papermc.paper.world.MoonPhase;
-import net.dv8tion.jda.api.AccountType;
-import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.JDABuilder;
+
+
+import org.bukkit.inventory.RecipeChoice;
+import org.javacord.api.Javacord.*;
+import org.javacord.api.DiscordApi;
+import org.javacord.api.DiscordApiBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.Ticks;
@@ -68,14 +71,12 @@ import org.bukkit.util.Vector;
 import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
 import javax.swing.*;
-
 import javax.security.auth.login.LoginException;
 
 public final class Hypixel extends JavaPlugin implements Listener
 {
-    public JDA jda;
+    private DiscordApi api;
     private Scoreboard board;
     private Objective obj;
     private Score one;
@@ -97,21 +98,18 @@ public final class Hypixel extends JavaPlugin implements Listener
     @Override
     public void onEnable()
     {
-        try {
-            JDA jda = JDABuilder.createDefault("ODc0Mjc2NzgzNjExMDg0ODUx.YREntA.vmYaYOUN-OvbViqDQS-xjAb1jb8").build();
-        } catch (LoginException e) {
-            e.printStackTrace();
-        }
-
         getServer().getPluginManager().registerEvents(this, this);
-        consol.sendMessage( ChatColor.AQUA + "[하이픽셀 플러그인 활성화.]");
-        consol.sendMessage( ChatColor.AQUA + "[레시피 제작중]");
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel] 하이픽셀 플러그인 활성화.");
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel] 레시피 제작중");
+
+
 
         ItemStack item = new ItemStack(Material.IRON_PICKAXE);
         item.addEnchantment(Enchantment.DIG_SPEED,1);
         item.addUnsafeEnchantment(Enchantment.DURABILITY,1);
         ShapedRecipe newrecipe = new ShapedRecipe(item).shape(new String[]{"@@@","P#P"," # "}).setIngredient('@',Material.IRON_ORE).setIngredient('#',Material.STICK).setIngredient('P',Material.COAL);
         getServer().addRecipe(newrecipe);
+
 
         item = new ItemStack(Material.IRON_INGOT,10);
         newrecipe = new ShapedRecipe(item).shape(new String[]{"@@@","@#@","@@@"}).setIngredient('@',Material.IRON_ORE).setIngredient('#',Material.COAL);
@@ -151,6 +149,7 @@ public final class Hypixel extends JavaPlugin implements Listener
         getServer().addRecipe(newrecipe);
 
         item = new ItemStack(Material.DIAMOND_PICKAXE,1,(short) 1544);
+        item.addUnsafeEnchantment(Enchantment.LOOT_BONUS_BLOCKS,1);
         item.addUnsafeEnchantment(Enchantment.DURABILITY,1);
         newrecipe = new ShapedRecipe(item).shape(new String[]{"@@@","Q#Q"," # "}).setIngredient('@',Material.GOLD_ORE).setIngredient('Q',Material.LAPIS_BLOCK).setIngredient('#',Material.STICK);
         getServer().addRecipe(newrecipe);
@@ -198,7 +197,7 @@ public final class Hypixel extends JavaPlugin implements Listener
                         for(int i = 0;i<q;i++)
                         {
                             Player pl = (Player) play.get(i);
-                            pl.sendTitle("자기장이 줄어듭니다","평화시간 끝", 0,40,20);
+                            pl.sendTitle(ChatColor.YELLOW+"자기장이 줄어듭니다","평화시간 끝", 0,40,20);
                         }
                     }
                     if(min==45&&sec==0&&tick==0)
@@ -208,10 +207,10 @@ public final class Hypixel extends JavaPlugin implements Listener
                         for(int i = 0;i<q;i++)
                         {
                             Player pl = (Player) play.get(i);
-                            pl.sendTitle("자기장이 줄어듭니다","독 효과가 부여됩니다", 0,40,20);
+                            pl.sendTitle(ChatColor.RED+"자기장이 줄어듭니다","독 효과가 부여됩니다", 0,40,20);
                             if(pl.getGameMode()==GameMode.SURVIVAL)
                             {
-
+                                pl.setGlowing(true);
                                 pl.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 1000000000,2));
                             }
                         }
@@ -407,18 +406,20 @@ public final class Hypixel extends JavaPlugin implements Listener
         sec = 0;
         min = 0;
 
-        winner.setGlowing(true);
+
         List players = getServer().getWorld("uhc").getPlayers();
         int top = players.size();
         for(int i = 0;i<top;i++)
         {
             Player pl = (Player) players.get(i);
+            pl.setGlowing(false);
             pl.resetTitle();
             pl.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-            pl.sendTitle(winner.getName(),"승리!", 0,100,40);
+            pl.sendTitle(winner.getName(),ChatColor.YELLOW+"승리!", 0,100,40);
             pl.teleport(getServer().getWorld("uhc").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
             pl.setGameMode(GameMode.SURVIVAL);
         }
+        winner.setGlowing(true);
 
     }
     @EventHandler
@@ -495,18 +496,16 @@ public final class Hypixel extends JavaPlugin implements Listener
 
     public void UHCWorldcreater()
     {
-
-
         WorldCreator seed = new WorldCreator("uhc");
         World world = seed.createWorld();
 
         world.setPVP(false);
 
+
         world.setDifficulty(Difficulty.EASY);
-        world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+        //world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.NATURAL_REGENERATION,false);
         world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN,true);
-
 
         world.getWorldBorder().setCenter(0,0);
         world.getWorldBorder().setDamageAmount(2);
@@ -518,30 +517,30 @@ public final class Hypixel extends JavaPlugin implements Listener
         isdropinghead = false;
 
         List players = getServer().getWorld("world").getPlayers();
-        for (int i = 0;i<players.size();i++) {
+        for (int i = 0;i<players.size();i++)
+        {
             Player pl = (Player) players.get(i);
+            pl.setGlowing(false);
             Random createRandom = new Random();
-            int xi = createRandom.nextInt(1000);
-            xi -= 500;
-            int zi = createRandom.nextInt(1000);
-            zi -= 500;
+            int xi = createRandom.nextInt(1000)-500;
+            int zi = createRandom.nextInt(1000)-500;
             pl.teleport(world.getHighestBlockAt(xi, zi).getLocation().add(0, 1, 0));
-
 
             pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
             pl.setGameMode(GameMode.SURVIVAL);
 
-
+            pl.setCompassTarget(new Location(getServer().getWorld("uhc"),0,50,0));
             pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 300, 255, true));
             pl.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 12000, 255, true));
-
 
             pl.getInventory().clear();
             ItemStack firstitem = new ItemStack(Material.STONE_PICKAXE, 1);
             pl.getInventory().addItem(firstitem);
+
             firstitem = new ItemStack(Material.STONE_AXE, 1);
             pl.getInventory().addItem(firstitem);
             firstitem = new ItemStack(Material.STONE_SWORD, 1);
+            firstitem.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 1);
             pl.getInventory().addItem(firstitem);
             firstitem = new ItemStack(Material.STONE_SHOVEL, 1);
             pl.getInventory().addItem(firstitem);
@@ -551,4 +550,6 @@ public final class Hypixel extends JavaPlugin implements Listener
         isgaming = true;
 
     }
+
+
 }
