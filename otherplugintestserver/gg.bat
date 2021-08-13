@@ -1,0 +1,1 @@
+java -Xms1G -Xmx6G -jar paper-1.8.8-443.jar

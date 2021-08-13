@@ -9,7 +9,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.Ticks;
 import org.bukkit.*;
-
 import com.google.common.util.concurrent.FutureCallback;
 
 import java.io.File;
@@ -73,6 +72,7 @@ import javax.security.auth.login.LoginException;
 
 public final class Hypixel extends JavaPlugin implements Listener
 {
+    enum skills {superinvisible}
     private Scoreboard board;
     private Objective obj;
     private Score one;
@@ -91,6 +91,7 @@ public final class Hypixel extends JavaPlugin implements Listener
     HashMap<UUID, Integer> hack = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> diamond = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> stone = new HashMap<UUID, Integer>();
+    @SuppressWarnings("deprecation")
     @Override
     public void onEnable()
     {
@@ -244,7 +245,6 @@ public final class Hypixel extends JavaPlugin implements Listener
         obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
         player.setScoreboard(board);
 
-
         sm = Bukkit.getScoreboardManager();
         board = sm.getNewScoreboard();
         obj = board.registerNewObjective("belownameheart", "health");
@@ -262,7 +262,6 @@ public final class Hypixel extends JavaPlugin implements Listener
         obj = board.registerNewObjective("totalplaytime", "dummy");
         obj.setDisplayName(ChatColor.AQUA +"UHC");
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-
 
         one = obj.getScore(ChatColor.GREEN+String.valueOf(min)+":"+String.valueOf(sec));
         one.setScore(p);
