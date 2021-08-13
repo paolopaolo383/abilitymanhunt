@@ -5,9 +5,6 @@ import io.papermc.paper.world.MoonPhase;
 
 
 import org.bukkit.inventory.RecipeChoice;
-import org.javacord.api.Javacord.*;
-import org.javacord.api.DiscordApi;
-import org.javacord.api.DiscordApiBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.Ticks;
@@ -76,7 +73,6 @@ import javax.security.auth.login.LoginException;
 
 public final class Hypixel extends JavaPlugin implements Listener
 {
-    private DiscordApi api;
     private Scoreboard board;
     private Objective obj;
     private Score one;
@@ -99,7 +95,7 @@ public final class Hypixel extends JavaPlugin implements Listener
     public void onEnable()
     {
         getServer().getPluginManager().registerEvents(this, this);
-        consol.sendMessage( ChatColor.AQUA + "[Hypixel] 하이픽셀 플러그인 활성화.");
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel] 하이픽셀 플러그인 v1.1 활성화.");
         consol.sendMessage( ChatColor.AQUA + "[Hypixel] 레시피 제작중");
 
 
@@ -153,7 +149,7 @@ public final class Hypixel extends JavaPlugin implements Listener
         item.addUnsafeEnchantment(Enchantment.DURABILITY,1);
         newrecipe = new ShapedRecipe(item).shape(new String[]{"@@@","Q#Q"," # "}).setIngredient('@',Material.GOLD_ORE).setIngredient('Q',Material.LAPIS_BLOCK).setIngredient('#',Material.STICK);
         getServer().addRecipe(newrecipe);
-
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel] 레시피 제작완료");
 
         //item = new ItemStack(Material.COAL,1);
 
@@ -240,7 +236,21 @@ public final class Hypixel extends JavaPlugin implements Listener
     }
 
 
+    public void healthscboard(Player player)
+    {
+        ScoreboardManager sm = Bukkit.getScoreboardManager();
+        board = sm.getNewScoreboard();
+        obj = board.registerNewObjective("listheart", "health2");
+        obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+        player.setScoreboard(board);
 
+
+        sm = Bukkit.getScoreboardManager();
+        board = sm.getNewScoreboard();
+        obj = board.registerNewObjective("belownameheart", "health");
+        obj.setDisplaySlot(DisplaySlot.BELOW_NAME);
+        player.setScoreboard(board);
+    }
 
 
 
@@ -295,7 +305,6 @@ public final class Hypixel extends JavaPlugin implements Listener
         four.setScore(p);
         p++;
         player.setScoreboard(board);
-
 
 
 
@@ -379,6 +388,7 @@ public final class Hypixel extends JavaPlugin implements Listener
 
         consol.sendMessage( ChatColor.YELLOW + "[사람이 들어옴]");
         Player player = e.getPlayer();
+        healthscboard(player);
         player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(1000);
         player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
         UUID uuid = player.getUniqueId();
@@ -425,7 +435,7 @@ public final class Hypixel extends JavaPlugin implements Listener
     @EventHandler
     public void playerchat(PlayerChatEvent e)
     {
-        e.getPlayer().sendMessage("게임중에는 채팅을 칠 수 없습니다.");
+        e.getPlayer().sendMessage("이 서버에서는 채팅을 칠 수 없습니다.");
         e.setCancelled(true);
     }
     @EventHandler
