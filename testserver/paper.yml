@@ -116,7 +116,7 @@ world-settings:
     prevent-tnt-from-moving-in-water: false
     iron-golems-can-spawn-in-air: false
     max-leash-distance: 10.0
-    grass-spread-tick-rate: 1
+    grass-spread-tick-rate: 3
     disable-thunder: false
     keep-spawn-loaded-range: 10
     disable-explosion-knockback: false
@@ -125,14 +125,14 @@ world-settings:
     armor-stands-do-collision-entity-lookups: true
     disable-ice-and-snow: false
     skeleton-horse-thunder-spawn-chance: 0.01
-    container-update-tick-rate: 1
+    container-update-tick-rate: 2
     fix-items-merging-through-walls: false
     fixed-chunk-inhabited-time: -1
-    optimize-explosions: false
+    optimize-explosions: true
     use-vanilla-world-scoreboard-name-coloring: false
-    prevent-moving-into-unloaded-chunks: false
+    prevent-moving-into-unloaded-chunks: true
     delay-chunk-unloads-by: 10s
-    per-player-mob-spawns: false
+    per-player-mob-spawns: true
     should-remove-dragon: false
     baby-zombie-movement-modifier: 0.5
     max-auto-save-chunks-per-tick: 24
@@ -141,9 +141,9 @@ world-settings:
     filter-nbt-data-from-spawn-eggs-and-related: true
     duplicate-uuid-resolver: saferegen
     duplicate-uuid-saferegen-delete-range: 32
-    max-entity-collisions: 8
-    non-player-arrow-despawn-rate: -1
-    creative-arrow-despawn-rate: -1
+    max-entity-collisions: 2
+    non-player-arrow-despawn-rate: 1
+    creative-arrow-despawn-rate: 1
     spawner-nerfed-mobs-should-jump: false
     entities-target-with-follow-range: false
     zombies-target-turtle-eggs: true
@@ -155,14 +155,14 @@ world-settings:
     treasure-maps-return-already-discovered: false
     light-queue-size: 20
     auto-save-interval: -1
-    armor-stands-tick: true
+    armor-stands-tick: false
     game-mechanics:
       fix-curing-zombie-villager-discount-exploit: true
       disable-pillager-patrols: false
       disable-relative-projectile-velocity: false
       disable-sprint-interruption-on-attack: false
       nerf-pigmen-from-nether-portals: false
-      disable-chest-cat-detection: false
+      disable-chest-cat-detection: true
       disable-player-crits: false
       disable-unloaded-chunk-enderpearl-exploit: true
       shield-blocking-delay: 5
@@ -179,7 +179,7 @@ world-settings:
           day: 5
     despawn-ranges:
       soft: 32
-      hard: 128
+      hard: 64
     frosted-ice:
       enabled: true
       delay:
@@ -189,7 +189,7 @@ world-settings:
       MinimumTicks: 100
       MaximumTicks: 600
     anti-xray:
-      enabled: false
+      enabled: true
       engine-mode: 1
       max-chunk-section-index: 3
       update-radius: 2
@@ -212,7 +212,7 @@ world-settings:
       - stone
       - oak_planks
     viewdistances:
-      no-tick-view-distance: -1
+      no-tick-view-distance: 8
     generator-settings:
       flat-bedrock: false
     entity-per-chunk-save-limit:
@@ -227,7 +227,7 @@ world-settings:
         max: 16
         min: 11
     alt-item-despawn-rate:
-      enabled: false
+      enabled: true
       items:
         COBBLESTONE: 300
     lootables:

@@ -65,7 +65,7 @@ world-settings:
     verbose: false
     hopper-amount: 1
     max-tnt-per-tick: 100
-    enable-zombie-pigmen-portal-spawns: true
+    enable-zombie-pigmen-portal-spawns: false
     wither-spawn-sound-radius: 0
     view-distance: default
     item-despawn-rate: 6000
@@ -89,10 +89,10 @@ world-settings:
     hanging-tick-frequency: 100
     zombie-aggressive-towards-villager: true
     end-portal-sound-radius: 0
-    mob-spawn-range: 8
-    arrow-despawn-rate: 1200
+    mob-spawn-range: 2
+    arrow-despawn-rate: 300
     trident-despawn-rate: 1200
-    nerf-spawner-mobs: false
+    nerf-spawner-mobs: true
     max-entity-collisions: 8
     entity-tracking-range:
       players: 48
@@ -121,27 +121,27 @@ world-settings:
       sweetberry-modifier: 100
       kelp-modifier: 100
     entity-activation-range:
-      animals: 32
-      monsters: 32
-      raiders: 48
-      misc: 16
-      water: 16
-      villagers: 32
-      flying-monsters: 32
+      animals: 6
+      monsters: 16
+      raiders: 32
+      misc: 4
+      water: 8
+      villagers: 16
+      flying-monsters: 36
       villagers-work-immunity-after: 100
       villagers-work-immunity-for: 20
       villagers-active-for-panic: true
-      tick-inactive-villagers: true
+      tick-inactive-villagers: false
       wake-up-inactive:
-        animals-max-per-tick: 4
+        animals-max-per-tick: 2
         animals-every: 1200
-        animals-for: 100
-        monsters-max-per-tick: 8
+        animals-for: 40
+        monsters-max-per-tick: 4
         monsters-every: 400
-        monsters-for: 100
-        villagers-max-per-tick: 4
+        monsters-for: 60
+        villagers-max-per-tick: 1
         villagers-every: 600
-        villagers-for: 100
+        villagers-for: 20
         flying-monsters-max-per-tick: 8
         flying-monsters-every: 200
         flying-monsters-for: 100
