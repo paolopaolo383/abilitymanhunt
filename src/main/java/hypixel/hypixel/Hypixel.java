@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +28,12 @@ import java.util.*;
 
 public final class Hypixel extends JavaPlugin implements Listener
 {
-
+    public String mapname = "uhc";
+    public int umapid = 0;
+    public int peacetime = 10;
+    public int killtime = 20;
+    public int deathmatchtime = 3;
+    public int[] borderarea = {2000,50,5};
     enum skills {superinvisible}
     private Scoreboard board;
     private Objective obj;
@@ -119,6 +123,7 @@ public final class Hypixel extends JavaPlugin implements Listener
         newrecipe = new ShapedRecipe(new NamespacedKey(this, "luck"),item).shape(new String[]{"$@$","Q#Q"," # "}).setIngredient('@',Material.GOLD_ORE).setIngredient('$',Material.IRON_ORE).setIngredient('Q',Material.LAPIS_BLOCK).setIngredient('#',Material.STICK);
         getServer().addRecipe(newrecipe);
 
+
         consol.sendMessage( ChatColor.GREEN + "[Hypixel] 레시피 제작완료");
 
         //item = new ItemStack(Material.COAL,1);
@@ -132,7 +137,7 @@ public final class Hypixel extends JavaPlugin implements Listener
             {
                 if(isgaming)
                 {
-                    List<Player> players = Objects.requireNonNull(getServer().getWorld("uhc")).getPlayers();
+                    List<Player> players = Objects.requireNonNull(getServer().getWorld(mapname)).getPlayers();
                     for (Player player : players) {
                         Player pl = player;
                         uhcscboard(pl);
@@ -152,12 +157,12 @@ public final class Hypixel extends JavaPlugin implements Listener
                     }
 
 
-                    if(min==10&&sec==0&&tick==0)
+                    if(min==peacetime&&sec==0&&tick==0)
                     {
-                        getServer().getWorld("uhc").setPVP(true);
+                        getServer().getWorld(mapname).setPVP(true);
                         isdropinghead = true;
-                        getServer().getWorld("uhc").getWorldBorder().setSize(50, 2000);
-                        List play = getServer().getWorld("uhc").getPlayers();
+                        getServer().getWorld(mapname).getWorldBorder().setSize(borderarea[1],  killtime*60);
+                        List play = getServer().getWorld(mapname).getPlayers();
                         int q = play.size();
                         for(int i = 0;i<q;i++)
                         {
@@ -165,9 +170,9 @@ public final class Hypixel extends JavaPlugin implements Listener
                             pl.sendTitle(ChatColor.YELLOW+"자기장이 줄어듭니다","평화시간 끝", 0,40,20);
                         }
                     }
-                    if(min==45&&sec==0&&tick==0)
+                    if(min==(peacetime+killtime)&&sec==0&&tick==0)
                     {
-                        List play = Objects.requireNonNull(getServer().getWorld("uhc")).getPlayers();
+                        List play = getServer().getWorld(mapname).getPlayers();
                         for (Object o : play) {
                             Player pl = (Player) o;
                             pl.sendTitle(ChatColor.RED + "자기장이 줄어듭니다", "독 효과가 부여됩니다", 0, 40, 20);
@@ -176,7 +181,7 @@ public final class Hypixel extends JavaPlugin implements Listener
                                 pl.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, 1000000000, 2));
                             }
                         }
-                        Objects.requireNonNull(getServer().getWorld("uhc")).getWorldBorder().setSize(5, 180);
+                        getServer().getWorld(mapname).getWorldBorder().setSize(borderarea[2], deathmatchtime*60);
                         //타이틀
                     }
                 }
@@ -188,10 +193,7 @@ public final class Hypixel extends JavaPlugin implements Listener
                     tick=0;
                     sec=0;
                     min=0;
-                    List<Player> players = Objects.requireNonNull(getServer().getWorld("world")).getPlayers();
-                    for (Player pl : players) {
-                        pl.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-                    }
+
                 }
             }
 
@@ -229,42 +231,42 @@ public final class Hypixel extends JavaPlugin implements Listener
         two = obj.getScore(ChatColor.WHITE+"총 플레이 시간");
         two.setScore(p);
         p++;
-        if(min<10)
+        if(min<peacetime)
         {
-            int ti = 600-totaltick/20;
+            int ti = ((peacetime*60)-(totaltick/20));
 
             three = obj.getScore(ChatColor.GREEN+String.valueOf((int)(ti/60))+":"+String.valueOf((ti%60)));
         }
-        else if(min<45)
+        else if(min<(peacetime+killtime))
         {
-            int ti = 2700-totaltick/20;
+            int ti = (((peacetime+killtime)*60)-(totaltick/20));
 
             three = obj.getScore(ChatColor.GREEN+String.valueOf((int)(ti/60))+":"+String.valueOf((ti%60)));
         }
-        else if(min<50)
+        else if(min<((peacetime+killtime+deathmatchtime)+10))
         {
-            int ti = 3000-totaltick/20;
+            int ti = ((((peacetime+killtime+deathmatchtime)+10)*60)-(totaltick/20));
 
             three = obj.getScore(ChatColor.GREEN+String.valueOf((int)(ti/60))+":"+String.valueOf((ti%60)));
         }
         three.setScore(p);
         p++;
-        if(min<10)
+        if(min<peacetime)
         {
             four= obj.getScore(ChatColor.WHITE+"평화시간 끝나기");
         }
-        else if(min<45)
+        else if(min<(peacetime+killtime))
         {
             four= obj.getScore(ChatColor.WHITE+"데스메치까지");
         }
-        else if(min<50)
+        else if(min<((peacetime+killtime+deathmatchtime)+10))
         {
             four= obj.getScore(ChatColor.WHITE+"게임 끝까지");
         }
         four.setScore(p);
         p++;
 
-        six = obj.getScore((min>=10?ChatColor.RED:ChatColor.GREEN)+String.valueOf(-1*(int)getServer().getWorld("uhc").getWorldBorder().getSize()/2)+" , "+String.valueOf((int)getServer().getWorld("uhc").getWorldBorder().getSize()/2));
+        six = obj.getScore((min>=10?ChatColor.RED:ChatColor.GREEN)+String.valueOf(-1*(int)getServer().getWorld(mapname).getWorldBorder().getSize()/2)+" , "+String.valueOf((int)getServer().getWorld(mapname).getWorldBorder().getSize()/2));
         six.setScore(p);
         p++;
 
@@ -296,7 +298,7 @@ public final class Hypixel extends JavaPlugin implements Listener
         {
             Player Winner = null;
             int sur = 0;
-            List players = getServer().getWorld("uhc").getPlayers();
+            List players = getServer().getWorld(mapname).getPlayers();
             int top = players.size();
             for(int i = 0;i<top;i++)
             {
@@ -320,31 +322,27 @@ public final class Hypixel extends JavaPlugin implements Listener
     {
         Player player  = e.getEntity();
         getServer().sendMessage(Component.text(ChatColor.RED+"사람이 죽었다"));
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
-        SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
-        skullMeta.setDisplayName(player.getName()+"'s head");
-        skullMeta.setOwner(player.getName()+"'s head");
-        skull.setItemMeta(skullMeta);
-        skull.addUnsafeEnchantment(Enchantment.LUCK,100);
-        e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(),skull);
+
         if(e.getEntity().getType()==EntityType.PLAYER)
         {
             if(isdropinghead&&isgaming)
             {
 
 
-                //ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1, (short) SkullType.PLAYER.ordinal());
-                //SkullMeta meta = (SkullMeta) skull.getItemMeta();
-
-                getServer().getWorld("uhc").dropItemNaturally(e.getEntity().getLocation(),skull);
-
+                ItemStack skull = new ItemStack(Material.PLAYER_HEAD, 1);
+                SkullMeta skullMeta = (SkullMeta) skull.getItemMeta();
+                skullMeta.setDisplayName(player.getName()+"'s head");
+                skullMeta.setOwner(player.getName()+"'s head");
+                skull.setItemMeta(skullMeta);
+                skull.addUnsafeEnchantment(Enchantment.LUCK,100);
+                e.getEntity().getWorld().dropItemNaturally(e.getEntity().getLocation(),skull);
 
 
 
                 e.getEntity().setGameMode(GameMode.SPECTATOR);
                 Player Winner = null;
                 int sur = 0;
-                List players = getServer().getWorld("uhc").getPlayers();
+                List players = getServer().getWorld(mapname).getPlayers();
                 int top = players.size();
                 for(int i = 0;i<top;i++)
                 {
@@ -381,6 +379,7 @@ public final class Hypixel extends JavaPlugin implements Listener
         player.sendMessage(ChatColor.RED+"서버 소개\n"+ChatColor.WHITE+"공격 딜레이가 없습니다.\n/uhc명령어를 통해 게임을 시작할 수 있습니다.\n특별 레시피가 있습니다.\n레시피는 기본적으로 조합법을 드립니다.");
         if(game=="uhc"&&isgaming&&isdropinghead)
         {
+            e.getPlayer().teleport(getServer().getWorld(mapname).getHighestBlockAt(0, 0).getLocation().add(0,1,0));
             player.setGameMode(GameMode.SPECTATOR);
         }
         else if(!isgaming)
@@ -397,18 +396,18 @@ public final class Hypixel extends JavaPlugin implements Listener
         tick = 0;
         sec = 0;
         min = 0;
+        List<Player> players = getServer().getWorld(mapname).getPlayers();
 
-
-        List players = getServer().getWorld("uhc").getPlayers();
         int top = players.size();
         for(int i = 0;i<top;i++)
         {
             Player pl = (Player) players.get(i);
+            pl.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
             pl.setGlowing(false);
             pl.resetTitle();
             pl.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
             pl.sendTitle(winner.getName(),ChatColor.YELLOW+"승리!", 0,100,40);
-            pl.teleport(getServer().getWorld("uhc").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
+            pl.teleport(getServer().getWorld("world").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
             pl.setGameMode(GameMode.SURVIVAL);
         }
         winner.setGlowing(true);
@@ -426,19 +425,32 @@ public final class Hypixel extends JavaPlugin implements Listener
 
         Player p =e.getPlayer(); // 플레이어가 액션을 취했을때 플레이어 저장 (Ex: 우클릭, 좌클릭 할때 저장)
 
-        try {
+        try
+        {
             if(e.getAction().equals(Action.LEFT_CLICK_AIR)||e.getAction().equals(Action.LEFT_CLICK_BLOCK)||e.getAction().equals(Action.RIGHT_CLICK_AIR))
             {
                 ItemStack firstitem = p.getInventory().getItemInMainHand().asOne();
+                ItemStack seconditem = new ItemStack(p.getInventory().getItemInOffHand().getType(),8);
                 if(p.getInventory().getItemInMainHand().getItemMeta().getEnchantLevel(Enchantment.LUCK)==100)
                 {
-                    p.removePotionEffect(PotionEffectType.SPEED);
-                    p.removePotionEffect(PotionEffectType.REGENERATION);
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,100, 1));
-                    p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,200, 2));
-                    p.getInventory().removeItem(firstitem);
+                    if ( p.getInventory().getItemInOffHand().getType().equals(Material.IRON_INGOT)&&p.getInventory().getItemInOffHand().getAmount()>7)
+                    {
+                        p.getInventory().removeItem(seconditem);
+                        p.getInventory().removeItem(firstitem);
+
+                        p.getInventory().addItem(new ItemStack(Material.ZOMBIE_HEAD,1));
+                    }
+                    else
+                    {
+                        p.removePotionEffect(PotionEffectType.SPEED);
+                        p.removePotionEffect(PotionEffectType.REGENERATION);
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED,100, 1));
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,200, 2));
+                        p.getInventory().removeItem(firstitem);
+                    }
+
                 }
-                if ( p.getInventory().getItemInMainHand().getType().equals(Material.ZOMBIE_HEAD))
+                if(p.getInventory().getItemInMainHand().getType()==Material.ZOMBIE_HEAD)
                 {
                     firstitem = new ItemStack(Material.ZOMBIE_HEAD,1);
                     p.removePotionEffect(PotionEffectType.SPEED);
@@ -447,10 +459,16 @@ public final class Hypixel extends JavaPlugin implements Listener
                     p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,200, 3) );
                     p.getInventory().removeItem(firstitem);
                 }
+
             }
+
             if(p.getInventory().getItemInMainHand().getItemMeta().getEnchantLevel(Enchantment.LUCK)==100||e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
             {
-                e.setCancelled(true);
+                if(p.getInventory().getItemInMainHand().getItemMeta().getEnchantLevel(Enchantment.LUCK)==100)
+                {
+                    e.setCancelled(true);
+                }
+
             }
         }
         catch(NullPointerException exception)
@@ -459,6 +477,7 @@ public final class Hypixel extends JavaPlugin implements Listener
         }
 
     }
+    /*
     @EventHandler
     public void player(BlockBreakEvent e)
     {
@@ -491,14 +510,17 @@ public final class Hypixel extends JavaPlugin implements Listener
             e.getPlayer().sendTitle(Double.toString((rate*100)),"음");
 
         }
-    }
+    }*/
+
+
     @Override
     public void onDisable()
     {
         if (isgaming)
         {
-
+            //저장
         }
+
     }
 
 
@@ -512,12 +534,30 @@ public final class Hypixel extends JavaPlugin implements Listener
             sender.sendMessage(ChatColor.AQUA+"[Hypixel] 월드 생성중");
             UHCWorldcreater();
         }
+        if(command.getName().equalsIgnoreCase("re"))
+        {
+            sender.sendMessage(ChatColor.AQUA+"[Hypixel] 게임 끝내는중");
+            setGame(player);
+            UHCWorldcreater();
+        }
+
         return true;
     }
 
 
 
-
+    public void config()
+    {
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel] config파일 불러오는중");
+        saveConfig();
+        File cfile = new File(getDataFolder(), "config.yml");
+        if (cfile.length() == 0)
+        {
+            getConfig().options().copyDefaults(true);
+            saveConfig();
+        }
+        consol.sendMessage( ChatColor.GREEN + "[Hypixel] config파일 불러옴");
+    }
 
 
 
@@ -530,12 +570,57 @@ public final class Hypixel extends JavaPlugin implements Listener
 
     public void UHCWorldcreater()
     {
-        WorldCreator seed = new WorldCreator("uhc");
-        World world = seed.createWorld();
 
+        int com = 0;
+        config();
+
+
+        consol.sendMessage(ChatColor.WHITE+"-----------------UHC WORLD SETTING-----------------");
+
+        Random createRandom = new Random();
+        umapid = createRandom.nextInt(1000);
+        mapname = "uhc"+String.valueOf(umapid);
+        consol.sendMessage(ChatColor.RED+"월드 이름 : "+ChatColor.YELLOW+mapname+"\n");
+
+        peacetime = Integer.valueOf(getConfig().getString("평화시간"));
+        killtime = Integer.valueOf(getConfig().getString("죽이는 시간"));
+        deathmatchtime = Integer.valueOf(getConfig().getString("마지막 시간"));
+        consol.sendMessage(ChatColor.AQUA+"게임시간");
+        consol.sendMessage(ChatColor.GREEN+"- " + String.valueOf(peacetime)+"분");
+        consol.sendMessage(ChatColor.YELLOW+"-- " + String.valueOf(killtime)+"분");
+        consol.sendMessage(ChatColor.RED+"--- " + String.valueOf(deathmatchtime)+"분\n");
+
+
+        borderarea[0] = Integer.valueOf(getConfig().getString("자기장 처음 넓이"));
+        borderarea[1] = Integer.valueOf(getConfig().getString("자기장 두번째 넓이"));
+        borderarea[2] = Integer.valueOf(getConfig().getString("자기장 마지막 넓이"));
+        consol.sendMessage(ChatColor.AQUA+"자기장 넓이");
+        consol.sendMessage(ChatColor.GREEN+"- " + String.valueOf(borderarea[0]));
+        consol.sendMessage(ChatColor.YELLOW+"-- " + String.valueOf(borderarea[1]));
+        consol.sendMessage(ChatColor.RED+"--- " + String.valueOf(borderarea[2])+"\n");
+
+
+
+
+        consol.sendMessage(ChatColor.YELLOW+"월드 생성중...");
+        World world;
+        try
+        {
+            WorldCreator seed = new WorldCreator(mapname);
+            world = seed.createWorld();
+        }
+        catch(Exception e)
+        {
+            consol.sendMessage(ChatColor.RED+e.getMessage());
+            return;
+        }
+        Random per = new Random();
+        com = per.nextInt(4)+68;
+        consol.sendMessage(ChatColor.GREEN+"월드 생성완료 ("+com+"%)");
+
+
+        consol.sendMessage(ChatColor.YELLOW+"월드 설정중...");
         world.setPVP(false);
-
-
         world.setDifficulty(Difficulty.EASY);
         //world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.NATURAL_REGENERATION,false);
@@ -545,27 +630,37 @@ public final class Hypixel extends JavaPlugin implements Listener
         world.getWorldBorder().setDamageAmount(2);
         world.getWorldBorder().setWarningDistance(100);
         world.getWorldBorder().setDamageBuffer(0);
-        world.getWorldBorder().setSize(2000);
+        world.getWorldBorder().setSize(borderarea[0]);
 
         game = "uhc";
-        isdropinghead = false;
 
+        isdropinghead = false;
+        per = new Random();
+        com = per.nextInt(4)+73;
+        consol.sendMessage(ChatColor.GREEN+"월드 설정완료 ("+com+"%)");
+
+
+
+        consol.sendMessage(ChatColor.YELLOW+"플레이어 설정중...");
         List players = getServer().getWorld("world").getPlayers();
+        int oneper = (100-com)/players.size();
         for (int i = 0;i<players.size();i++)
         {
+
             Player pl = (Player) players.get(i);
+
             pl.setGlowing(false);
-            Random createRandom = new Random();
-            int xi = createRandom.nextInt(1000)-500;
-            int zi = createRandom.nextInt(1000)-500;
+            createRandom = new Random();
+            int xi = createRandom.nextInt(Integer.valueOf(borderarea[0]/2))-Integer.valueOf(borderarea[0]/4);
+            int zi = createRandom.nextInt(Integer.valueOf(borderarea[0]/2))-Integer.valueOf(borderarea[0]/4);
             pl.teleport(world.getHighestBlockAt(xi, zi).getLocation().add(0, 1, 0));
 
             pl.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(40);
             pl.setGameMode(GameMode.SURVIVAL);
 
-            pl.setCompassTarget(new Location(getServer().getWorld("uhc"),0,50,0));
+            pl.setCompassTarget(new Location(getServer().getWorld(mapname),0,50,0));
             pl.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 300, 255, true));
-            pl.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 12000, 255, true));
+            pl.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, peacetime*120, 255, true));
 
             pl.getInventory().clear();
             ItemStack firstitem = new ItemStack(Material.STONE_PICKAXE, 1);
@@ -578,9 +673,11 @@ public final class Hypixel extends JavaPlugin implements Listener
             pl.getInventory().addItem(firstitem);
             firstitem = new ItemStack(Material.STONE_SHOVEL, 1);
             pl.getInventory().addItem(firstitem);
-
+            consol.sendMessage(ChatColor.GREEN+"- "+pl.getName()+" ("+String.valueOf(oneper+com-1)+"%)");
         }
-
+        consol.sendMessage(ChatColor.GREEN+"플레이어 설정 완료 (100%)");
+        consol.sendMessage(ChatColor.AQUA+"uhc 게임 시작");
+        consol.sendMessage(ChatColor.WHITE+"---------------------------------------------------");
         isgaming = true;
 
     }
