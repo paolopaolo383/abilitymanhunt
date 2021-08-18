@@ -60,15 +60,8 @@ public final class Hypixel extends JavaPlugin implements Listener
     {
         getServer().getPluginManager().registerEvents(this, this);
         consol.sendMessage( ChatColor.AQUA + "[Hypixel] 하이픽셀 플러그인 v1.1 활성화.");
-        consol.sendMessage( ChatColor.AQUA + "[Hypixel] config파일 불러오는중");
-        saveConfig();
-        File cfile = new File(getDataFolder(), "config.yml");
-        if (cfile.length() == 0)
-        {
-            getConfig().options().copyDefaults(true);
-            saveConfig();
-        }
-        consol.sendMessage( ChatColor.GREEN + "[Hypixel] config파일 불러옴");
+        config();
+        /*
         consol.sendMessage( ChatColor.AQUA + "[Hypixel] 레시피 제작중");
 
 
@@ -125,7 +118,7 @@ public final class Hypixel extends JavaPlugin implements Listener
 
 
         consol.sendMessage( ChatColor.GREEN + "[Hypixel] 레시피 제작완료");
-
+*/
         //item = new ItemStack(Material.COAL,1);
 
         //newrecipe = new ShapedRecipe(item).shape(new String[]{"@@@","@@@","@@@"}).setIngredient('@',Material.PLANK);
@@ -141,7 +134,6 @@ public final class Hypixel extends JavaPlugin implements Listener
                     for (Player player : players) {
                         Player pl = player;
                         uhcscboard(pl);
-
                     }
                     totaltick++;
                     tick++;
@@ -200,19 +192,6 @@ public final class Hypixel extends JavaPlugin implements Listener
         }.runTaskTimer(this, 0L, 1L);
     }
 
-    @EventHandler
-    public void playershift(PlayerToggleSneakEvent e)
-    {
-
-        if(e.getPlayer().isSneaking()) //이제 안함
-        {
-            e.getPlayer().sendMessage("하는중");
-        }
-        else//이제 시작
-        {
-            e.getPlayer().sendMessage("---------------------");
-        }
-    }
 
 
 
@@ -274,6 +253,21 @@ public final class Hypixel extends JavaPlugin implements Listener
         seven.setScore(p);
         p++;
 
+        int border = (int)getServer().getWorld(mapname).getWorldBorder().getSize()/2;
+        int x = (player.getLocation().getBlockX()<0?-1:1)*player.getLocation().getBlockX();
+        int z = (player.getLocation().getBlockY()<0?-1:1)*player.getLocation().getBlockY();
+        if(x<z)
+        {
+            x = z;
+        }
+        x = border-x;
+        six = obj.getScore(((x<100)?ChatColor.RED:ChatColor.GREEN)+String.valueOf(x));
+        six.setScore(p);
+        p++;
+
+        seven = obj.getScore(ChatColor.WHITE+"자기장과의 거리");
+        seven.setScore(p);
+        p++;
         player.setScoreboard(board);
     }
 
@@ -286,9 +280,8 @@ public final class Hypixel extends JavaPlugin implements Listener
     {
 
         e.setQuitMessage(getConfig().getString("서버퇴장"));
-        if(e.getPlayer().getGameMode()==GameMode.SURVIVAL)
+        if(e.getPlayer().getGameMode() == GameMode.SURVIVAL)
         {
-
             if(isgaming)
             {
                 e.getPlayer().setHealth(0);
@@ -377,12 +370,12 @@ public final class Hypixel extends JavaPlugin implements Listener
         hack.put(uuid,0);
         e.setJoinMessage(getConfig().getString("서버접속"));
         player.sendMessage(ChatColor.RED+"서버 소개\n"+ChatColor.WHITE+"공격 딜레이가 없습니다.\n/uhc명령어를 통해 게임을 시작할 수 있습니다.\n특별 레시피가 있습니다.\n레시피는 기본적으로 조합법을 드립니다.");
-        if(game=="uhc"&&isgaming&&isdropinghead)
+        if(isgaming)
         {
             e.getPlayer().teleport(getServer().getWorld(mapname).getHighestBlockAt(0, 0).getLocation().add(0,1,0));
             player.setGameMode(GameMode.SPECTATOR);
         }
-        else if(!isgaming)
+        else
         {
             e.getPlayer().setGameMode(GameMode.SURVIVAL);
             e.getPlayer().teleport(getServer().getWorld("world").getHighestBlockAt(0, 0).getLocation().add(0,1,0));
@@ -411,7 +404,6 @@ public final class Hypixel extends JavaPlugin implements Listener
             pl.setGameMode(GameMode.SURVIVAL);
         }
         winner.setGlowing(true);
-
     }
     @EventHandler
     public void playerchat(PlayerChatEvent e)
@@ -549,6 +541,7 @@ public final class Hypixel extends JavaPlugin implements Listener
     public void config()
     {
         consol.sendMessage( ChatColor.AQUA + "[Hypixel] config파일 불러오는중");
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel]");
         saveConfig();
         File cfile = new File(getDataFolder(), "config.yml");
         if (cfile.length() == 0)
@@ -556,6 +549,21 @@ public final class Hypixel extends JavaPlugin implements Listener
             getConfig().options().copyDefaults(true);
             saveConfig();
         }
+        String[] Option = getConfig().saveToString().split("\n");
+        for(int i = 0;i<Option.length;i++)
+        {
+            String space = "　";
+            int len = Option[i].split(":")[0].length();
+
+            while((16-len)>0)
+            {
+                space = space+"　";
+                len++;
+            }
+
+            consol.sendMessage(ChatColor.AQUA + "[Hypixel] - " + Option[i].split(":")[0]+space+" -- "+ChatColor.GREEN+Option[i].split(": ")[1]);
+        }
+        consol.sendMessage( ChatColor.AQUA + "[Hypixel]");
         consol.sendMessage( ChatColor.GREEN + "[Hypixel] config파일 불러옴");
     }
 
@@ -583,17 +591,17 @@ public final class Hypixel extends JavaPlugin implements Listener
         consol.sendMessage(ChatColor.RED+"월드 이름 : "+ChatColor.YELLOW+mapname+"\n");
 
         peacetime = Integer.valueOf(getConfig().getString("평화시간"));
-        killtime = Integer.valueOf(getConfig().getString("죽이는 시간"));
-        deathmatchtime = Integer.valueOf(getConfig().getString("마지막 시간"));
+        killtime = Integer.valueOf(getConfig().getString("죽이는　시간"));
+        deathmatchtime = Integer.valueOf(getConfig().getString("마지막　시간"));
         consol.sendMessage(ChatColor.AQUA+"게임시간");
         consol.sendMessage(ChatColor.GREEN+"- " + String.valueOf(peacetime)+"분");
         consol.sendMessage(ChatColor.YELLOW+"-- " + String.valueOf(killtime)+"분");
         consol.sendMessage(ChatColor.RED+"--- " + String.valueOf(deathmatchtime)+"분\n");
 
 
-        borderarea[0] = Integer.valueOf(getConfig().getString("자기장 처음 넓이"));
-        borderarea[1] = Integer.valueOf(getConfig().getString("자기장 두번째 넓이"));
-        borderarea[2] = Integer.valueOf(getConfig().getString("자기장 마지막 넓이"));
+        borderarea[0] = Integer.valueOf(getConfig().getString("자기장　처음　넓이"));
+        borderarea[1] = Integer.valueOf(getConfig().getString("자기장　두번째　넓이"));
+        borderarea[2] = Integer.valueOf(getConfig().getString("자기장　마지막　넓이"));
         consol.sendMessage(ChatColor.AQUA+"자기장 넓이");
         consol.sendMessage(ChatColor.GREEN+"- " + String.valueOf(borderarea[0]));
         consol.sendMessage(ChatColor.YELLOW+"-- " + String.valueOf(borderarea[1]));
@@ -672,6 +680,8 @@ public final class Hypixel extends JavaPlugin implements Listener
             firstitem.addUnsafeEnchantment(Enchantment.FIRE_ASPECT, 1);
             pl.getInventory().addItem(firstitem);
             firstitem = new ItemStack(Material.STONE_SHOVEL, 1);
+            pl.getInventory().addItem(firstitem);
+            firstitem = new ItemStack(Material.COOKED_BEEF, 64);
             pl.getInventory().addItem(firstitem);
             consol.sendMessage(ChatColor.GREEN+"- "+pl.getName()+" ("+String.valueOf(oneper+com-1)+"%)");
         }

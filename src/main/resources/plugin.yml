@@ -6,6 +6,3 @@ commands:
   uhc:
     description: uhc
     usage: /uhc
-  re:
-    description: re
-    usage: /re
