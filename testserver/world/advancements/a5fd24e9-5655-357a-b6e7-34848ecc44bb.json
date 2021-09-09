@@ -2231,6 +2231,12 @@
     },
     "done": true
   },
+  "minecraft:story/form_obsidian": {
+    "criteria": {
+      "obsidian": "2021-08-27 22:31:50 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/food/cooked_rabbit": {
     "criteria": {
       "has_the_recipe": "2021-08-25 23:14:31 +0900"
@@ -2612,6 +2618,12 @@
   "minecraft:recipes/combat/golden_sword": {
     "criteria": {
       "has_the_recipe": "2021-08-25 23:14:31 +0900"
+    },
+    "done": true
+  },
+  "minecraft:story/shiny_gear": {
+    "criteria": {
+      "diamond_boots": "2021-08-27 22:09:21 +0900"
     },
     "done": true
   },
@@ -3607,13 +3619,21 @@
   },
   "minecraft:adventure/adventuring_time": {
     "criteria": {
+      "minecraft:cold_ocean": "2021-08-27 21:58:03 +0900",
       "minecraft:forest": "2021-08-25 23:20:23 +0900",
       "minecraft:mountains": "2021-08-25 23:13:38 +0900",
       "minecraft:taiga": "2021-08-25 23:47:40 +0900",
       "minecraft:taiga_hills": "2021-08-25 23:55:18 +0900",
+      "minecraft:deep_frozen_ocean": "2021-08-27 22:13:47 +0900",
+      "minecraft:jungle": "2021-08-27 22:17:51 +0900",
+      "minecraft:jungle_hills": "2021-08-27 22:25:28 +0900",
+      "minecraft:snowy_beach": "2021-08-27 22:51:59 +0900",
+      "minecraft:deep_lukewarm_ocean": "2021-08-27 22:43:54 +0900",
       "minecraft:beach": "2021-08-25 23:15:47 +0900",
       "minecraft:dark_forest": "2021-08-25 23:28:22 +0900",
       "minecraft:river": "2021-08-25 23:16:32 +0900",
+      "minecraft:lukewarm_ocean": "2021-08-27 22:42:19 +0900",
+      "minecraft:snowy_taiga": "2021-08-27 22:52:13 +0900",
       "minecraft:swamp": "2021-08-25 23:27:26 +0900",
       "minecraft:plains": "2021-08-25 23:16:20 +0900"
     },

@@ -1,8 +1,8 @@
-name: Hypixel
-version: ${project.version}
-main: hypixel.hypixel.Hypixel
+---
 api-version: 1.16
 commands:
   uhc:
-    description: uhc
     usage: /uhc
+main: hypixel.hypixel.Hypixel
+name: Hypixel
+version: "${project.version}"

@@ -1,15 +1,11 @@
 package hypixel.hypixel;
 
-import com.destroystokyo.paper.Namespaced;
-import com.google.common.collect.Multimap;
 import net.kyori.adventure.text.Component;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
-import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -18,25 +14,24 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.inventory.meta.tags.CustomItemTagContainer;
-import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.*;
+
 public final class Hypixel extends JavaPlugin implements Listener, CommandExecutor
 {
     public int ti;
@@ -78,7 +73,6 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         consol.sendMessage( ChatColor.AQUA + "[Hypixel] 레시피 제작중");
 
 
-
         ItemStack item = new ItemStack(Material.IRON_PICKAXE);
         item.addEnchantment(Enchantment.DIG_SPEED,1);
         item.addUnsafeEnchantment(Enchantment.DURABILITY,1);
@@ -104,13 +98,13 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         newrecipe = new ShapedRecipe(new NamespacedKey(this, "special_bow"),item).shape(new String[]{" @#","@ #"," @#"}).setIngredient('@',Material.REDSTONE_TORCH).setIngredient('#',Material.STRING);
         getServer().addRecipe(newrecipe);
 
-
+/*
         item = new ItemStack(Material.ENCHANTED_BOOK,1);
         EnchantmentStorageMeta a =(EnchantmentStorageMeta) item.getItemMeta();
         a.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,false);
         item.setItemMeta(a);
         newrecipe = new ShapedRecipe(new NamespacedKey(this, "protect_book"),item).shape(new String[]{"   "," @@"," @#"}).setIngredient('@',Material.PAPER).setIngredient('#',Material.IRON_INGOT);
-        getServer().addRecipe(newrecipe);
+        getServer().addRecipe(newrecipe);5
 
         item = new ItemStack(Material.ENCHANTED_BOOK,1);
         EnchantmentStorageMeta b =(EnchantmentStorageMeta) item.getItemMeta();
@@ -118,6 +112,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         item.setItemMeta(b);
         newrecipe = new ShapedRecipe(new NamespacedKey(this, "sharp_book"),item).shape(new String[]{"Q  "," @@"," @#"}).setIngredient('@',Material.PAPER).setIngredient('Q',Material.FLINT).setIngredient('#',Material.IRON_SWORD);
         getServer().addRecipe(newrecipe);
+        */
 
         item = new ItemStack(Material.ANVIL,1);
         newrecipe = new ShapedRecipe(new NamespacedKey(this, "anvil"),item).shape(new String[]{"@@@"," ! ","@@@"}).setIngredient('@',Material.IRON_INGOT).setIngredient('!',Material.IRON_BLOCK);
@@ -125,12 +120,12 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
 
         item = new ItemStack(Material.IRON_HELMET,1);
-        item.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE,1);
-        item.addUnsafeEnchantment(Enchantment.PROTECTION_EXPLOSIONS,1);
-        item.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE,1);
-        a =(EnchantmentStorageMeta) item.getItemMeta();
+        //item.addUnsafeEnchantment(Enchantment.PROTECTION_PROJECTILE,1);
+        //item.addUnsafeEnchantment(Enchantment.PROTECTION_EXPLOSIONS,1);
+        //item.addUnsafeEnchantment(Enchantment.PROTECTION_FIRE,1);
+        EnchantmentStorageMeta a =(EnchantmentStorageMeta) item.getItemMeta();
         a.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL,1,false);
-        item.setItemMeta(a);
+        item.setItemMeta((ItemMeta) a);
         newrecipe = new ShapedRecipe(new NamespacedKey(this, "special_helmat"),item).shape(new String[]{"@@@","@#@","   "}).setIngredient('@',Material.IRON_INGOT).setIngredient('#',Material.REDSTONE_TORCH);
         getServer().addRecipe(newrecipe);
 
@@ -153,6 +148,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                 {
                     if(min>-1&&sec>20)
                     {
+
                         List<Player> players = getServer().getWorld(mapname).getPlayers();
                         for (Player player : players)
                         {
@@ -381,6 +377,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
 
     }
+
     @EventHandler
     public void join(PlayerJoinEvent e)
     {
@@ -407,6 +404,8 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         }
 
     }
+
+
     public void setGame(Player winner)
     {
         isgaming = false;
@@ -429,14 +428,14 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             pl.setGameMode(GameMode.SURVIVAL);
         }
         winner.setGlowing(true);
-    }
+    }/*
     @EventHandler
     public void playerchat(PlayerChatEvent e)
     {
         e.getPlayer().sendMessage("이 서버에서는 채팅을 칠 수 없습니다.");
         e.setCancelled(true);
     }
-
+*/
     @EventHandler
     public void PlayerClickBlock(PlayerInteractEvent e) {
 
@@ -543,15 +542,13 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command,String s,  String[] args)
+    public boolean onCommand(@NotNull CommandSender sender,@NotNull Command command,String s, String[] args)
     {
-        Player player = (Player) sender;
         if(command.getName().equalsIgnoreCase("uhc"))
         {
-            player.sendMessage(ChatColor.AQUA+"[Hypixel] 월드 생성중");
+            consol.sendMessage(ChatColor.AQUA+"[Hypixel] 월드 생성중");
             UHCWorldcreater();
         }
-
         return true;
     }
 
@@ -678,7 +675,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
 
             consol.sendMessage(ChatColor.YELLOW + "플레이어 설정중...");
-            List players = getServer().getWorld("world").getPlayers();
+            List players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
             int oneper = (100 - com) / players.size();
             for (int i = 0; i < players.size(); i++) {
 
@@ -720,10 +717,5 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             isgaming = true;
     }
 
-    @EventHandler
-    public void PlayerPotalEvent(PlayerPortalEvent e)
-    {
-        e.setTo(new Location(neither,0, 50,0));
-    }
 
 }
