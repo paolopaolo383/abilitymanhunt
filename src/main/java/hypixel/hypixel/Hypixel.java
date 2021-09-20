@@ -41,7 +41,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     }
     private Inventory inv;
     private String runner = "__481926__";
-    private static final int rawcnt = 4;
+    private static final int rawcnt = 6;
     private String runnerworld="OverWorld";
     private Scoreboard board;
     private Objective obj;
@@ -81,9 +81,9 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                         {
                             player.setCompassTarget(getServer().getPlayer(runner).getLocation());
                         }
-                        if(tick==19&&!player.getName().equalsIgnoreCase(runner)&&player.getLocation().distance(getServer().getPlayer(runner).getLocation())<10)
+                        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.covid19&&tick==19&&!player.getName().equalsIgnoreCase(runner)&&player.getLocation().distance(getServer().getPlayer(runner).getLocation())<5)
                         {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON,20,1));
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON,30,0));
                         }
 
 
@@ -131,10 +131,10 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
     public void manhuntscoreboard(Player player)
     {
-        int a=0;
-        if(player.getName().equalsIgnoreCase(runner))
+        int a=rawcnt;
+        if(player.getName().equalsIgnoreCase(runner)&&skill.get(player.getUniqueId())==skills.stealth)
         {
-            a = -2;
+            a=a+2;
         }
 
         ScoreboardManager sm = Bukkit.getScoreboardManager();
@@ -144,17 +144,16 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         one = obj.getScore(ChatColor.WHITE+"총 플레이 시간");
-        one.setScore(rawcnt-a);
-        a++;
+        one.setScore(a);
 
 
         one = obj.getScore(ChatColor.YELLOW+String.valueOf(min)+"분:"+String.valueOf(sec)+"초");one.setScore(rawcnt-a);a++;
-        one.setScore(rawcnt-a);
-        a++;
+        one.setScore(a-2);
+
 
         one = obj.getScore(ChatColor.WHITE+"러너가 있는 월드");
-        one.setScore(rawcnt-a);
-        a++;
+        one.setScore(a-3);
+
         if(runnerworld.equalsIgnoreCase("CraftWorld{name=world}"))
             one = obj.getScore(ChatColor.GREEN+"overworld");
 
@@ -164,30 +163,31 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         if(runnerworld.equalsIgnoreCase("CraftWorld{name=world_the_end}"))
             one = obj.getScore(ChatColor.AQUA+"enderworld");
 
-        one.setScore(rawcnt-a);
-        a++;
+        one.setScore(a-4);
+        one = obj.getScore(ChatColor.YELLOW+"러너");
+        one.setScore(a-5);
+        one = obj.getScore(ChatColor.WHITE+runner);
+        one.setScore(a-6);
         UUID id = player.getUniqueId();
 
-        if(player.getName().equalsIgnoreCase(runner))
+        if(player.getName().equalsIgnoreCase(runner)&&skill.get(player.getUniqueId())==skills.stealth)
         {
-            if(skills.stealth==skill.get(id)&&cooltime.get(id)!=0)
+            if(cooltime.get(id)!=0)
             {
                 one = obj.getScore(ChatColor.WHITE+"스킬 쿨타임");
-                one.setScore(rawcnt-a);
-                a++;
+                one.setScore(a-7);
 
                 one = obj.getScore(ChatColor.RED+String.valueOf(cooltime.get(id))+"초");
-                one.setScore(rawcnt-a);
-                a++;
+                one.setScore(a-8);
             }
             else
             {
                 one = obj.getScore(ChatColor.RED+"스킬 사용 가능");
-                one.setScore(rawcnt-a);
-                a++;
+                one.setScore(a-7);
+
                 one = obj.getScore(ChatColor.WHITE+"철괴 또는 다이아몬드 우클릭");
-                one.setScore(rawcnt-a);
-                a++;
+                one.setScore(a-8);
+
             }
         }
 
@@ -199,6 +199,11 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     {
         if(command.getName().equalsIgnoreCase("ran")) {
             runner = sender.getName();
+
+        }
+        if(command.getName().equalsIgnoreCase("go")) {
+            Player pl = (Player) sender;
+            go(pl.getUniqueId());
 
         }
         if(command.getName().equalsIgnoreCase("ab")||command.getName().equalsIgnoreCase("ability")) {
@@ -297,41 +302,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             UUID id = whoHit.getUniqueId();
             if(whoHit.getPlayer().getName().equalsIgnoreCase(runner))
             {
-                if(isready)
-                {
-                    isready=false;
-                    isgaming = true;
-                    cooltime.put(id,0);
-                    skill.put(id,skills.stealth);
-                    players=Arrays.asList(Bukkit.getOnlinePlayers().toArray());
-                    for(int i = 0;i<players.size();i++)
-                    {
-                        Player player = (Player)players.get(i);
-                        if(player.getName().equalsIgnoreCase(runner))//러너
-                        {
-                            if(skill.get(id)==skills.stealth)
-                            {
-                                player.sendMessage("당신의 능력은 은둔자입니다");
-                            }
-                            if(skill.get(id)==skills.covid19)
-                            {
-                                player.sendMessage("당신의 능력은 확진자입니다");
-                                player.setMaxHealth(16);
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE , 100000000 , 1));
-                            }
-
-                            player.getInventory().clear();
-                            player.sendTitle(ChatColor.RED+"게임시작!",ChatColor.GREEN+"헌터를 피해 엔더 드래곤을 잡으세요",40,120,40);
-                        }
-                        else
-                        {
-                            player.getInventory().clear();
-                            player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
-                            consol.sendMessage(ChatColor.YELLOW+"[MANHUNT] 　·"+player.getName());
-                            player.sendTitle(ChatColor.YELLOW+"게임 시작",ChatColor.GREEN+"러너를 잡으세요",40,120,40);
-                        }
-                    }
-                }
+                go(id);
             }
             else if(isready)
             {
@@ -341,6 +312,50 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         }
     }
 
+
+    public void go(UUID id)
+    {
+        if(isready)
+        {
+            isready=false;
+            isgaming = true;
+            cooltime.put(id,0);
+            //skill.put(id,skills.stealth);
+            players=Arrays.asList(Bukkit.getOnlinePlayers().toArray());
+            for(int i = 0;i<players.size();i++)
+            {
+
+                Player player = (Player)players.get(i);
+                player.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
+                if(player.getName().equalsIgnoreCase(runner))//러너
+                {
+
+                    if(skill.get(id)==skills.covid19)
+                    {
+                        player.sendMessage("당신의 능력은 확진자입니다");
+                        player.setMaxHealth(14);
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE , 100000000 , 1));
+                    }
+                    else if(skill.get(id)==skills.stealth)
+                    {
+                        player.setMaxHealth(20);
+                        player.sendMessage("당신의 능력은 은둔자입니다");
+                    }
+
+
+                    player.getInventory().clear();
+                    player.sendTitle(ChatColor.RED+"게임시작!",ChatColor.GREEN+"헌터를 피해 엔더 드래곤을 잡으세요",40,120,40);
+                }
+                else
+                {
+                    player.getInventory().clear();
+                    player.getInventory().addItem(new ItemStack(Material.COMPASS,1));
+                    consol.sendMessage(ChatColor.YELLOW+"[MANHUNT] 　·"+player.getName());
+                    player.sendTitle(ChatColor.YELLOW+"게임 시작",ChatColor.GREEN+"러너를 잡으세요",40,120,40);
+                }
+            }
+        }
+    }
 
 
 
@@ -460,11 +475,11 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         }
         if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.covid19)
         {
-            inv.addItem(createGuiItem(Material.GOLD_INGOT, ChatColor.RED+"확진자", ChatColor.GREEN+"거리두기", ChatColor.WHITE+"적과 10칸 이내로 가까이있다면",ChatColor.WHITE+"적에게 독을 부여합니다",ChatColor.GREEN+"패시브","힘 2를 받습니다,체력이 8칸입니다","  ",ChatColor.GREEN+"[Selected]"));
+            inv.addItem(createGuiItem(Material.GOLD_INGOT, ChatColor.RED+"확진자", ChatColor.GREEN+"거리두기", ChatColor.WHITE+"적과 5칸 이내로 가까이있다면",ChatColor.WHITE+"적에게 독을 부여합니다",ChatColor.GREEN+"패시브","힘 2를 받습니다,체력이 7칸입니다","  ",ChatColor.GREEN+"[Selected]"));
         }
         else
         {
-            inv.addItem(createGuiItem(Material.GOLD_INGOT, ChatColor.RED+"확진자", ChatColor.GREEN+"거리두기", ChatColor.WHITE+"적과 10칸 이내로 가까이있다면",ChatColor.WHITE+"적에게 독을 부여합니다",ChatColor.GREEN+"패시브","힘 2를 받습니다,체력이 8칸입니다","  ",ChatColor.YELLOW+"[Select to click]"));
+            inv.addItem(createGuiItem(Material.GOLD_INGOT, ChatColor.RED+"확진자", ChatColor.GREEN+"거리두기", ChatColor.WHITE+"적과 5칸 이내로 가까이있다면",ChatColor.WHITE+"적에게 독을 부여합니다",ChatColor.GREEN+"패시브","힘 2를 받습니다,체력이 7칸입니다","  ",ChatColor.YELLOW+"[Select to click]"));
         }
         inv.addItem(createGuiItem(Material.RED_STAINED_GLASS_PANE,"  ","  "));//covid19
         inv.addItem(createGuiItem(Material.YELLOW_STAINED_GLASS_PANE,"  ","  "));
@@ -520,7 +535,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             p.sendMessage("당신은 은둔자 능력을 선택하였습니다.");
             skill.put(p.getUniqueId(),skills.stealth);
         }
-        if(e.getRawSlot()==1)
+        else if(e.getRawSlot()==1)
         {
             p.sendMessage("당신은 코로나 확진자 능력을 선택하였습니다.");
             skill.put(p.getUniqueId(),skills.covid19);
