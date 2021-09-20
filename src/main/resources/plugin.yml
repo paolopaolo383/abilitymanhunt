@@ -1,8 +1,12 @@
 ---
 api-version: 1.16
 commands:
+  ability:
+    usage: /ability
   manhunt:
     usage: /manhunt
+  ran:
+    usage: /ran
 main: hypixel.hypixel.Hypixel
 name: Hypixel
 version: "${project.version}"
