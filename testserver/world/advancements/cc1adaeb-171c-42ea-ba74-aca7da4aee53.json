@@ -35,6 +35,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/misc/paper": {
+    "criteria": {
+      "has_reeds": "2021-09-21 12:54:08 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/decorations/yellow_stained_glass_pane_from_glass_pane": {
     "criteria": {
       "has_glass_pane": "2021-09-20 18:45:32 +0900"
@@ -173,6 +179,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/misc/lime_dye_from_smelting": {
+    "criteria": {
+      "has_sea_pickle": "2021-09-21 14:52:26 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/transportation/spruce_boat": {
     "criteria": {
       "in_water": "2021-09-20 15:55:18 +0900"
@@ -182,6 +194,12 @@
   "minecraft:recipes/decorations/jukebox": {
     "criteria": {
       "has_diamond": "2021-09-20 16:34:43 +0900"
+    },
+    "done": true
+  },
+  "minecraft:recipes/building_blocks/terracotta": {
+    "criteria": {
+      "has_clay_block": "2021-09-21 13:25:42 +0900"
     },
     "done": true
   },
@@ -197,6 +215,12 @@
     },
     "done": true
   },
+  "minecraft:recipes/building_blocks/oak_planks": {
+    "criteria": {
+      "has_logs": "2021-09-21 14:06:07 +0900"
+    },
+    "done": true
+  },
   "minecraft:recipes/building_blocks/blue_concrete_powder": {
     "criteria": {
       "has_sand": "2021-09-20 19:18:48 +0900"
@@ -206,6 +230,12 @@
   "minecraft:recipes/building_blocks/gray_concrete_powder": {
     "criteria": {
       "has_sand": "2021-09-20 19:18:48 +0900"
+    },
+    "done": true
+  },
+  "minecraft:recipes/misc/sugar_from_sugar_cane": {
+    "criteria": {
+      "has_reeds": "2021-09-21 12:54:08 +0900"
     },
     "done": true
   },
@@ -278,6 +308,12 @@
   "minecraft:recipes/decorations/cartography_table": {
     "criteria": {
       "has_paper": "2021-09-20 23:21:12 +0900"
+    },
+    "done": true
+  },
+  "minecraft:recipes/building_blocks/oak_wood": {
+    "criteria": {
+      "has_log": "2021-09-21 14:06:07 +0900"
     },
     "done": true
   },
@@ -389,9 +425,11 @@
       "minecraft:desert_hills": "2021-09-20 16:34:13 +0900",
       "minecraft:desert": "2021-09-20 16:35:22 +0900",
       "minecraft:birch_forest": "2021-09-20 21:35:26 +0900",
+      "minecraft:warm_ocean": "2021-09-21 14:52:35 +0900",
       "minecraft:savanna_plateau": "2021-09-20 15:57:28 +0900",
       "minecraft:beach": "2021-09-20 16:36:22 +0900",
       "minecraft:river": "2021-09-20 15:55:18 +0900",
+      "minecraft:lukewarm_ocean": "2021-09-21 14:51:55 +0900",
       "minecraft:birch_forest_hills": "2021-09-20 21:35:33 +0900",
       "minecraft:savanna": "2021-09-20 15:54:32 +0900",
       "minecraft:plains": "2021-09-20 15:54:12 +0900"
@@ -425,6 +463,12 @@
   "minecraft:recipes/misc/book": {
     "criteria": {
       "has_paper": "2021-09-20 23:21:12 +0900"
+    },
+    "done": true
+  },
+  "minecraft:adventure/sleep_in_bed": {
+    "criteria": {
+      "slept_in_bed": "2021-09-21 13:58:35 +0900"
     },
     "done": true
   },
