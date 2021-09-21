@@ -17,6 +17,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -72,62 +73,53 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             {
                 if(isgaming)
                 {
+                    try {
+                        players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
+                        for (int i = 0; i < players.size(); i++) {
+                            Player player = (Player) players.get(i);
+                            UUID id = player.getUniqueId();
+                            manhuntscoreboard(player);//스코어 보드
 
-                    players=Arrays.asList(Bukkit.getOnlinePlayers().toArray());
-                    for (int i = 0; i < players.size(); i++)
-                    {
-                        Player player = (Player) players.get(i);
-                        UUID id = player.getUniqueId();
-                        manhuntscoreboard(player);//스코어 보드
-
-                        try
-                        {
-                            if(compass==0)
-                            {
+                            if (compass == 0) {
                                 player.setCompassTarget(getServer().getPlayer(runner).getLocation());
+
                             }
+
+                            if (skill.get(getServer().getPlayer(runner).getUniqueId()) == skills.covid19 && tick == 19 && !player.getName().equalsIgnoreCase(runner) && player.getLocation().distance(getServer().getPlayer(runner).getLocation()) < 5) {
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
+                            }
+
+
+                            runnerworld = String.valueOf(getServer().getPlayer(runner).getLocation().getWorld());
+
                         }
-                        catch (Exception e)
-                        {
-                            e.getMessage();
+
+                        if (sec == 0 && tick == 0) {
+                            loc[top] = getServer().getPlayer(runner).getLocation();
+                            top++;
                         }
+                        totaltick++;
+                        tick++;
+                        if (tick == 20) {
+                            tick = 0;
+                            sec++;
+                            if (compass != 0) {
+                                compass--;
+                            }
+                            if (cooltime.get(getServer().getPlayer(runner).getUniqueId()) != 0) {
+                                cooltime.put(getServer().getPlayer(runner).getUniqueId(), cooltime.get(getServer().getPlayer(runner).getUniqueId()) - 1);
+                            }
 
-                        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.covid19&&tick==19&&!player.getName().equalsIgnoreCase(runner)&&player.getLocation().distance(getServer().getPlayer(runner).getLocation())<5)
-                        {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.POISON,30,0));
+
                         }
-
-
-
-                        runnerworld=String.valueOf(getServer().getPlayer(runner).getLocation().getWorld());
+                        if (sec == 60) {
+                            sec = 0;
+                            min++;
+                        }
                     }
-
-                    if(sec==0&&tick==0)
+                    catch (Exception e)
                     {
-                        loc[top]=getServer().getPlayer(runner).getLocation();
-                        top++;
-                    }
-                    totaltick++;
-                    tick++;
-                    if (tick==20)
-                    {
-                        tick=0;
-                        sec++;
-                        if(compass!=0)
-                        {
-                            compass--;
-                        }
-                        if(cooltime.get(getServer().getPlayer(runner).getUniqueId())!=0)
-                        {
-                            cooltime.put(getServer().getPlayer(runner).getUniqueId(),cooltime.get(getServer().getPlayer(runner).getUniqueId())-1);
-                        }
-
-
-                    }
-                    if (sec==60)
-                    {
-                        sec = 0;
-                        min++;
+                        e.getMessage();
                     }
                 }
                 else
@@ -309,7 +301,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         {
             isgaming = false;
             e.setDeathSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER);
-            e.getEntity().getPlayer().setGameMode(GameMode.SPECTATOR);
+            //e.getEntity().getPlayer().setGameMode(GameMode.SPECTATOR);
 
             players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
             for (int i = 0; i < players.size(); i++)
@@ -383,6 +375,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
     public void go(UUID id)
     {
+        id = getServer().getPlayer(runner).getUniqueId();
         if(isready)
         {
             isready=false;
@@ -553,7 +546,11 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     }
 
 
-
+    @EventHandler
+    public void respawn(PlayerRespawnEvent e)
+    {
+        e.getPlayer().getInventory().addItem(new ItemStack(Material.COMPASS));
+    }
 
 
 
