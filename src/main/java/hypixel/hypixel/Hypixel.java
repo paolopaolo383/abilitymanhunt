@@ -310,7 +310,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                 player.sendTitle(ChatColor.RED + "러너가 죽었다...", ChatColor.BLUE + "헌터 승!");
             }
         }
-        else if(isrebirthable)
+        else if(e.getEntity().getPlayer().getName().equalsIgnoreCase(runner)&&isgaming&&isrebirthable)
         {
             players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
             for (int i = 0; i < players.size(); i++)
@@ -381,12 +381,12 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             isready=false;
             isgaming = true;
             cooltime.put(id,0);
-            //skill.put(id,skills.stealth);
             players=Arrays.asList(Bukkit.getOnlinePlayers().toArray());
             for(int i = 0;i<players.size();i++)
             {
 
                 Player player = (Player)players.get(i);
+                player.setMaxHealth(20);
                 player.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
                 if(player.getName().equalsIgnoreCase(runner))//러너
                 {
@@ -396,7 +396,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                         isrebirthable=false;
                         player.sendMessage("당신의 능력은 확진자입니다");
                         player.setMaxHealth(14);
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE , 100000000 , 1));
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE , 100000000 , 0));
                     }
                     else if(skill.get(id)==skills.stealth)
                     {
@@ -414,7 +414,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                     {
                         player.setMaxHealth(20);
                         player.sendMessage("당신의 능력은 붐버맨입니다");
-                        isrebirthable=true;
+                        isrebirthable=false;
                     }
                     player.getInventory().clear();
                     player.sendTitle(ChatColor.RED+"게임시작!",ChatColor.GREEN+"헌터를 피해 엔더 드래곤을 잡으세요",40,120,40);
@@ -597,11 +597,27 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         {
             inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.YELLOW+"[Select to click]"));
         }
-        inv.addItem(createGuiItem(Material.RED_STAINED_GLASS_PANE,"  ","  "));//covid19
+
+/*
+        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.bomber)
+        {
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"폭파광",ChatColor.GREEN+"라이터",
+                    ChatColor.WHITE+"라이터를 소모해",
+                    ChatColor.WHITE+"자신의 자리에 tnt를 소환합니다",
+                    ChatColor.GREEN+"시뮬레이션",
+                    ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.",
+                    "  ",
+                    ChatColor.GREEN+"[Selected]"));
+        }
+        else
+        {
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"폭파광", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.YELLOW+"[Select to click]"));
+        }*/
+        inv.addItem(createGuiItem(Material.RED_STAINED_GLASS_PANE,"  ","  "));
         inv.addItem(createGuiItem(Material.YELLOW_STAINED_GLASS_PANE,"  ","  "));
         inv.addItem(createGuiItem(Material.GREEN_STAINED_GLASS_PANE,"  ","  "));
         inv.addItem(createGuiItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"  ","  "));
-        inv.addItem(createGuiItem(Material.BLUE_STAINED_GLASS_PANE,"  ","  "));
+        inv.addItem(createGuiItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"  ","     ","   "));
         inv.addItem(createGuiItem(Material.BARRIER,"닫기",""));
     }
 
