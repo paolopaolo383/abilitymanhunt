@@ -64,6 +64,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     private static List<UUID> quitplayer=new ArrayList<UUID>();
     HashMap<UUID, skills> skill = new HashMap<UUID, skills>();
     HashMap<UUID, Integer> quitcooltime = new HashMap<UUID, Integer>();
+    HashMap<UUID, Integer> quitcnt = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> cooltime = new HashMap<UUID, Integer>();
     ConsoleCommandSender consol = Bukkit.getConsoleSender();
     HashMap<UUID, Boolean> isparty = new HashMap<UUID, Boolean>();
@@ -364,7 +365,10 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
-
+        if(!quitcnt.containsKey(e.getPlayer().getUniqueId()))
+        {
+            quitcnt.put(e.getPlayer().getUniqueId(),0);
+        }
         if (quitplayer.contains(e.getPlayer().getUniqueId())) {/////////////////////////////
             quitplayer.remove(e.getPlayer().getUniqueId());
         }
@@ -378,13 +382,20 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
         }
 
-        if (isgaming) {
-            if (isparty.get(e.getPlayer().getUniqueId()))
+        if (isgaming||isready) {
+            try
             {
-                e.getPlayer().setGameMode(GameMode.SURVIVAL);
-            }
-            else
+                if (isparty.get(e.getPlayer().getUniqueId()))
                 {
+                    e.getPlayer().setGameMode(GameMode.SURVIVAL);
+                }
+                else
+                {
+                    e.getPlayer().setGameMode(GameMode.SPECTATOR);
+                }
+            }
+            catch (Exception exception)
+            {
                 e.getPlayer().setGameMode(GameMode.SPECTATOR);
             }
 
@@ -400,8 +411,25 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         if (isparty.get(e.getPlayer().getUniqueId())&&isgaming) {
             e.setQuitMessage(ChatColor.RED + "게임에 참여중인 사람이 나갔습니다. - " + e.getPlayer().getName() + "\n" + "5분 내에 들어오지 않으면 게임에서 추방됩니다.");
 
-            quitplayer.add(e.getPlayer().getUniqueId()); /////////////////////////////////////
-
+            /////////////////////////////////////
+            quitcnt.put(e.getPlayer().getUniqueId(),quitcnt.get(e.getPlayer().getUniqueId())+1);
+            if(quitcnt.get(e.getPlayer().getUniqueId())==4)
+            {
+                getServer().sendMessage(Component.text("4번 게임에서 나갔기때문에 강제 추방되었습니다."));
+                isparty.put(e.getPlayer().getUniqueId(),false);
+                if(e.getPlayer().getName().equalsIgnoreCase(runner))
+                {
+                    isgaming=false;
+                    players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
+                    for (int i = 0; i < players.size(); i++) {
+                        Player player = (Player) players.get(i);
+                        player.sendTitle("게임 종료","러너의 트롤",20,60,20);
+                    }
+                    getServer().sendMessage(Component.text(ChatColor.RED+"러너가 추방되어 게임이 종료되었습니다..."));
+                }
+                deadplayer.add(e.getPlayer().getUniqueId());
+            }
+            quitplayer.add(e.getPlayer().getUniqueId());
             new BukkitRunnable() {
 
                 @Override
