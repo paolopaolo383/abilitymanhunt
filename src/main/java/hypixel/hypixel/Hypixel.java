@@ -1,5 +1,6 @@
 package hypixel.hypixel;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,6 +18,8 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -55,10 +58,15 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     int min, sec, tick;
     private List players;
     int compass=0;
+
+    List<UUID> deadplayer=new ArrayList<UUID>();
     org.bukkit.Location loc[]=  new org.bukkit.Location[500];
+    private static List<UUID> quitplayer=new ArrayList<UUID>();
     HashMap<UUID, skills> skill = new HashMap<UUID, skills>();
+    HashMap<UUID, Integer> quitcooltime = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> cooltime = new HashMap<UUID, Integer>();
     ConsoleCommandSender consol = Bukkit.getConsoleSender();
+    HashMap<UUID, Boolean> isparty = new HashMap<UUID, Boolean>();
     @Override
     public void onEnable()
     {
@@ -109,6 +117,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                             if (cooltime.get(getServer().getPlayer(runner).getUniqueId()) != 0) {
                                 cooltime.put(getServer().getPlayer(runner).getUniqueId(), cooltime.get(getServer().getPlayer(runner).getUniqueId()) - 1);
                             }
+
 
 
                         }
@@ -227,6 +236,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         }
         if(command.getName().equalsIgnoreCase("manhunt"))
         {
+
             isready = true;
             consol.sendMessage(ChatColor.GREEN +"[MANHUNT] 게임 시작!");
             consol.sendMessage(ChatColor.AQUA+"[MANHUNT] 러너");
@@ -236,6 +246,8 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             for(int i = 0;i<players.size();i++)
             {
                 Player player = (Player)players.get(i);
+                player.setGameMode(GameMode.SURVIVAL);
+                isparty.put(player.getUniqueId(),true);
                 player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,100,100));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,100,100));
@@ -350,7 +362,73 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
 
 
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e) {
 
+        if (quitplayer.contains(e.getPlayer().getUniqueId())) {/////////////////////////////
+            quitplayer.remove(e.getPlayer().getUniqueId());
+        }
+        if(deadplayer.contains(e.getPlayer().getUniqueId()))
+        {
+            if(e.getPlayer().getUniqueId().equals(e.getPlayer().getUniqueId()))
+            {
+                deadplayer.remove(e.getPlayer().getUniqueId());
+                e.getPlayer().setHealth(0);
+            }
+
+        }
+
+        if (isgaming) {
+            if (isparty.get(e.getPlayer().getUniqueId()))
+            {
+                e.getPlayer().setGameMode(GameMode.SURVIVAL);
+            }
+            else
+                {
+                e.getPlayer().setGameMode(GameMode.SPECTATOR);
+            }
+
+        }
+        else
+            {
+            e.getPlayer().setGameMode(GameMode.SURVIVAL);
+        }
+
+    }
+    @EventHandler
+    public void onQuit(PlayerQuitEvent e) {
+        if (isparty.get(e.getPlayer().getUniqueId())&&isgaming) {
+            e.setQuitMessage(ChatColor.RED + "게임에 참여중인 사람이 나갔습니다. - " + e.getPlayer().getName() + "\n" + "5분 내에 들어오지 않으면 게임에서 추방됩니다.");
+
+            quitplayer.add(e.getPlayer().getUniqueId()); /////////////////////////////////////
+
+            new BukkitRunnable() {
+
+                @Override
+                public void run() {
+
+                    if (!quitplayer.contains(e.getPlayer().getUniqueId())) {
+                        return;
+                    }
+                    consol.sendMessage("ww");
+                    getServer().sendMessage(Component.text(ChatColor.RED+"5분이 지났습니다.\n게임에서 추방되었습니다"));
+                    isparty.put(e.getPlayer().getUniqueId(),false);
+                    if(e.getPlayer().getName().equalsIgnoreCase(runner))
+                    {
+                        isgaming=false;
+                        players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
+                        for (int i = 0; i < players.size(); i++) {
+                            Player player = (Player) players.get(i);
+                            player.sendTitle("게임 종료","러너의 트롤",20,60,20);
+                        }
+                        getServer().sendMessage(Component.text(ChatColor.RED+"러너가 추방되어 게임이 종료되었습니다..."));
+                    }
+                    deadplayer.add(e.getPlayer().getUniqueId());
+                }
+
+            }.runTaskLater(this,20*60*5);          //5분
+        }
+    }
 
 
     @EventHandler
@@ -438,7 +516,18 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     {
 
         Player p =e.getPlayer(); // 플레이어가 액션을 취했을때 플레이어 저장 (Ex: 우클릭, 좌클릭 할때 저장)
+        if((e.getAction().equals(Action.RIGHT_CLICK_AIR)||e.getAction().equals(Action.RIGHT_CLICK_BLOCK))&&p.getInventory().getItemInMainHand().getType() == Material.COMPASS)
+        {
+            if(e.getPlayer().getName().equalsIgnoreCase(runner)&&isready)
+            {
+                openInventory(e.getPlayer());
+            }
+        }
 
+        if(!isgaming)
+        {
+            e.setCancelled(true);
+        }
         if(e.getAction().equals(Action.LEFT_CLICK_AIR)||e.getAction().equals(Action.LEFT_CLICK_BLOCK)||e.getAction().equals(Action.RIGHT_CLICK_AIR)||e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
             try
@@ -536,13 +625,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             }
         }
 
-        if((e.getAction().equals(Action.RIGHT_CLICK_AIR)||e.getAction().equals(Action.RIGHT_CLICK_BLOCK))&&p.getInventory().getItemInMainHand().getType() == Material.COMPASS)
-        {
-            if(e.getPlayer().getName().equalsIgnoreCase(runner))
-            {
-                openInventory(e.getPlayer());
-            }
-        }
+
     }
 
 
