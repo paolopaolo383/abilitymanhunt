@@ -392,6 +392,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+        e.getPlayer().sendMessage("/des 로 설명을 볼 수 있습니다.");
         if(!quitcnt.containsKey(e.getPlayer().getUniqueId()))
         {
             quitcnt.put(e.getPlayer().getUniqueId(),0);
