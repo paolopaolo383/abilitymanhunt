@@ -9,8 +9,10 @@ commands:
     usage: /ability
   manhunt:
     usage: /manhunt
-  ran:
-    usage: /ran
+  run:
+    usage: /run
+  des:
+    usage: /des
 main: hypixel.hypixel.Hypixel
 name: Hypixel
 version: "${project.version}"

@@ -31,6 +31,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
 import java.util.*;
 
 public final class Hypixel extends JavaPlugin implements Listener, CommandExecutor
@@ -59,7 +60,9 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     private List players;
     int compass=0;
 
+
     List<UUID> deadplayer=new ArrayList<UUID>();
+    List<UUID> warnplayer=new ArrayList<UUID>();
     org.bukkit.Location loc[]=  new org.bukkit.Location[500];
     private static List<UUID> quitplayer=new ArrayList<UUID>();
     HashMap<UUID, skills> skill = new HashMap<UUID, skills>();
@@ -221,8 +224,28 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, String s, String[] args)
     {
-        if(command.getName().equalsIgnoreCase("ran")) {
-            runner = sender.getName();
+        if(command.getName().equalsIgnoreCase("des"))
+        {
+            sender.sendMessage("플러그인 설명");
+            sender.sendMessage("/run을 통해 자신을 러너로 설정할 수 있습니다.");
+            sender.sendMessage("게임 시작시 러너가 헌터를 때리면 시작");
+            if(sender.isOp())
+            {
+                sender.sendMessage("/manhunt를 통해 게임 시작.");
+            }
+        }
+        if(command.getName().equalsIgnoreCase("run")) {
+            if(runner.equalsIgnoreCase(sender.getName()))
+            {
+                sender.sendMessage("이미 러너입니다.");
+
+            }
+            else
+            {
+                runner = sender.getName();
+
+                getServer().sendMessage(Component.text(runner+"님이 러너가 되셨습니다."));
+            }
 
         }
         if(command.getName().equalsIgnoreCase("go")) {
@@ -238,53 +261,57 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         if(command.getName().equalsIgnoreCase("manhunt"))
         {
 
-            isready = true;
-            consol.sendMessage(ChatColor.GREEN +"[MANHUNT] 게임 시작!");
-            consol.sendMessage(ChatColor.AQUA+"[MANHUNT] 러너");
-            consol.sendMessage(ChatColor.AQUA+"[MANHUNT] 　·"+runner);
-            consol.sendMessage(ChatColor.YELLOW+"[MANHUNT] 헌터");
-            players=Arrays.asList(Bukkit.getOnlinePlayers().toArray());
-            for(int i = 0;i<players.size();i++)
+            if(sender.isOp())
             {
-                Player player = (Player)players.get(i);
-                player.setGameMode(GameMode.SURVIVAL);
-                isparty.put(player.getUniqueId(),true);
-                player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-                player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,100,100));
-                player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,100,100));
-                if(player.getName().equalsIgnoreCase(runner))//러너
+                isready = true;
+                consol.sendMessage(ChatColor.GREEN +"[MANHUNT] 게임 시작!");
+                consol.sendMessage(ChatColor.AQUA+"[MANHUNT] 러너");
+                consol.sendMessage(ChatColor.AQUA+"[MANHUNT] 　·"+runner);
+                consol.sendMessage(ChatColor.YELLOW+"[MANHUNT] 헌터");
+                players=Arrays.asList(Bukkit.getOnlinePlayers().toArray());
+                for(int i = 0;i<players.size();i++)
                 {
-                    run = player;
-                    openInventory(player);
-                    player.getInventory().clear();
-                    player.getInventory().addItem(new ItemStack(Material.COMPASS));
-                    player.sendTitle(ChatColor.RED+"당신은 러너입니다",ChatColor.GREEN+"헌터를 때리면 시작",40,120,40);
+                    Player player = (Player)players.get(i);
+                    player.setGameMode(GameMode.ADVENTURE);
+                    isparty.put(player.getUniqueId(),true);
+                    player.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION,100,100));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.SATURATION,100,100));
+                    if(player.getName().equalsIgnoreCase(runner))//러너
+                    {
+                        run = player;
+                        openInventory(player);
+                        player.getInventory().clear();
+                        player.getInventory().addItem(new ItemStack(Material.COMPASS));
+                        player.sendTitle(ChatColor.RED+"당신은 러너입니다",ChatColor.GREEN+"헌터를 때리면 시작",40,120,40);
 
-                    Random createRandom = new Random();
-                    int ability = createRandom.nextInt(3);
-                    if(ability==0)
-                    {
-                        skill.put(player.getUniqueId(),skills.stealth);
-                        player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.AQUA+" 은둔자"+ChatColor.WHITE+"입니다.");
+                        Random createRandom = new Random();
+                        int ability = createRandom.nextInt(3);
+                        if(ability==0)
+                        {
+                            skill.put(player.getUniqueId(),skills.stealth);
+                            player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.AQUA+" 은둔자"+ChatColor.WHITE+"입니다.");
+                        }
+                        else if(ability==1)
+                        {
+                            skill.put(player.getUniqueId(),skills.covid19);
+                            player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.GREEN+" 확진자"+ChatColor.WHITE+"입니다.");
+                        }
+                        else if(ability==2)
+                        {
+                            skill.put(player.getUniqueId(),skills.prophet);
+                            player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.YELLOW+" 예언자"+ChatColor.WHITE+"입니다.");
+                        }
+                        player.sendMessage("나침반을 우클릭하여 능력을 바꿀 수 있습니다.");
                     }
-                    else if(ability==1)
+                    else
                     {
-                        skill.put(player.getUniqueId(),skills.covid19);
-                        player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.GREEN+" 확진자"+ChatColor.WHITE+"입니다.");
+                        player.getInventory().clear();
+                        consol.sendMessage(ChatColor.YELLOW+"[MANHUNT] 　·"+player.getName());
+                        player.sendTitle(ChatColor.YELLOW+"당신은 헌터입니다",ChatColor.GREEN+"ready!",40,120,40);
                     }
-                    else if(ability==2)
-                    {
-                        skill.put(player.getUniqueId(),skills.prophet);
-                        player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.YELLOW+" 예언자"+ChatColor.WHITE+"입니다.");
-                    }
-                    player.sendMessage("나침반을 우클릭하여 능력을 바꿀 수 있습니다.");
                 }
-                else
-                {
-                    player.getInventory().clear();
-                    consol.sendMessage(ChatColor.YELLOW+"[MANHUNT] 　·"+player.getName());
-                    player.sendTitle(ChatColor.YELLOW+"당신은 헌터입니다",ChatColor.GREEN+"ready!",40,120,40);
-                }
+
             }
         }
         return true;
@@ -382,6 +409,17 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
         }
 
+
+        if(warnplayer.contains(e.getPlayer().getUniqueId()))
+        {
+            if(e.getPlayer().getUniqueId().equals(e.getPlayer().getUniqueId()))
+            {
+                warnplayer.remove(e.getPlayer().getUniqueId());
+                e.getPlayer().sendTitle("  ", "한번 더 나가시면 3일밴입니다.",0,120,40);
+            }
+
+        }
+
         if (isgaming||isready) {
             try
             {
@@ -424,10 +462,17 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                     for (int i = 0; i < players.size(); i++) {
                         Player player = (Player) players.get(i);
                         player.sendTitle("게임 종료","러너의 트롤",20,60,20);
+
                     }
-                    getServer().sendMessage(Component.text(ChatColor.RED+"러너가 추방되어 게임이 종료되었습니다..."));
+                    e.getPlayer().banPlayer("게임중 퇴장",Date.from(Instant.now().plusSeconds(60*60*24*3)));
+                    getServer().sendMessage(Component.text(ChatColor.RED+"러너가 추방되어 게임이 종료되었습니다...\n러너 3일 밴"));
                 }
+
                 deadplayer.add(e.getPlayer().getUniqueId());
+            }
+            if(quitcnt.get(e.getPlayer().getUniqueId())==3)
+            {
+                warnplayer.add(e.getPlayer().getUniqueId());
             }
             quitplayer.add(e.getPlayer().getUniqueId());
             new BukkitRunnable() {
@@ -449,7 +494,8 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                             Player player = (Player) players.get(i);
                             player.sendTitle("게임 종료","러너의 트롤",20,60,20);
                         }
-                        getServer().sendMessage(Component.text(ChatColor.RED+"러너가 추방되어 게임이 종료되었습니다..."));
+                        e.getPlayer().banPlayer("게임중 퇴장",Date.from(Instant.now().plusSeconds(60*60*24)));
+                        getServer().sendMessage(Component.text(ChatColor.RED+"러너가 추방되어 게임이 종료되었습니다...\n러너 1일 밴"));
                     }
                     deadplayer.add(e.getPlayer().getUniqueId());
                 }
@@ -492,6 +538,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             {
 
                 Player player = (Player)players.get(i);
+                player.setGameMode(GameMode.SURVIVAL);
                 player.setMaxHealth(20);
                 player.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
                 if(player.getName().equalsIgnoreCase(runner))//러너
