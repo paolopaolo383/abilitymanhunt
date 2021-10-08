@@ -31,16 +31,18 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.time.Instant;
 import java.util.*;
 
 public final class Hypixel extends JavaPlugin implements Listener, CommandExecutor
 {
-
-
-
-
+    enum skills
+    {
+        stealth,
+        covid19,
+        prophet,
+        bomber
+    }
     private Inventory inv;
     private String runner = "__481926__";
     private static final int rawcnt = 6;
@@ -58,13 +60,12 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     private List players;
     int compass=0;
 
-    List<String> koreaskill=new ArrayList<String>();
-    List<String> engskill  = new ArrayList<String>();
+
     List<UUID> deadplayer=new ArrayList<UUID>();
     List<UUID> warnplayer=new ArrayList<UUID>();
     org.bukkit.Location loc[]=  new org.bukkit.Location[500];
     private static List<UUID> quitplayer=new ArrayList<UUID>();
-    String skill =
+    HashMap<UUID, skills> skill = new HashMap<UUID, skills>();
     HashMap<UUID, Integer> quitcooltime = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> quitcnt = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> cooltime = new HashMap<UUID, Integer>();
@@ -146,36 +147,6 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             }
 
         }.runTaskTimer(this, 0L, 1L);
-    }
-    public void config()
-    {
-        consol.sendMessage( ChatColor.AQUA + "[manhunt] config파일 불러오는중");
-        consol.sendMessage( ChatColor.AQUA + "[manhunt]");
-        saveConfig();
-        File cfile;
-        try
-        {
-            cfile = new File(getDataFolder(), "config.yml");
-        }
-        catch (Exception exception)
-        {
-            getConfig().options().copyDefaults(true);
-            saveConfig();
-            cfile = new File(getDataFolder(), "config.yml");
-        }
-
-        if (cfile.length() == 0)
-        {
-            getConfig().options().copyDefaults(true);
-            saveConfig();
-        }
-
-        getConfig().getString("능력들(한국어)");
-
-
-
-        consol.sendMessage( ChatColor.AQUA + "[manhunt]");
-        consol.sendMessage( ChatColor.GREEN + "[manhunt] config파일 불러옴");
     }
 
     public void manhuntscoreboard(Player player)
