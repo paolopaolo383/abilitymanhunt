@@ -17,7 +17,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -55,26 +54,20 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     boolean isready = false;
     boolean isgaming=false;
     int totaltick=0;
-
-    boolean itemclick=false;
-    Material item = null;
-    boolean ispoison = false;
     int min, sec, tick;
     private List players;
     int compass=0;
-    int maxhealth = 20;
 
     List<String> koreaskill=new ArrayList<String>();
     List<String> engskill  = new ArrayList<String>();
     List<UUID> deadplayer=new ArrayList<UUID>();
-    List<String> skills = new ArrayList<String>();
     List<UUID> warnplayer=new ArrayList<UUID>();
     org.bukkit.Location loc[]=  new org.bukkit.Location[500];
     private static List<UUID> quitplayer=new ArrayList<UUID>();
-    String skill ="";
+    String skill =
     HashMap<UUID, Integer> quitcooltime = new HashMap<UUID, Integer>();
     HashMap<UUID, Integer> quitcnt = new HashMap<UUID, Integer>();
-    int cooltime = 0;
+    HashMap<UUID, Integer> cooltime = new HashMap<UUID, Integer>();
     ConsoleCommandSender consol = Bukkit.getConsoleSender();
     HashMap<UUID, Boolean> isparty = new HashMap<UUID, Boolean>();
     @Override
@@ -103,7 +96,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
                             }
 
-                            if (ispoison && tick == 19 && !player.getName().equalsIgnoreCase(runner) && player.getLocation().distance(getServer().getPlayer(runner).getLocation()) < 5) {
+                            if (skill.get(getServer().getPlayer(runner).getUniqueId()) == skills.covid19 && tick == 19 && !player.getName().equalsIgnoreCase(runner) && player.getLocation().distance(getServer().getPlayer(runner).getLocation()) < 5) {
                                 player.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
                             }
 
@@ -124,8 +117,8 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                             if (compass != 0) {
                                 compass--;
                             }
-                            if (cooltime != 0) {
-                                cooltime= cooltime - 1);
+                            if (cooltime.get(getServer().getPlayer(runner).getUniqueId()) != 0) {
+                                cooltime.put(getServer().getPlayer(runner).getUniqueId(), cooltime.get(getServer().getPlayer(runner).getUniqueId()) - 1);
                             }
 
 
@@ -177,11 +170,8 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             saveConfig();
         }
 
-        skills= Arrays.asList(getConfig().getString("능력들").split(","));
-        for(int i = 0;i<skills.size();i++)
-        {
-            consol.sendMessage( ChatColor.AQUA + "[manhunt]   -"+skills.get(i));
-        }
+        getConfig().getString("능력들(한국어)");
+
 
 
         consol.sendMessage( ChatColor.AQUA + "[manhunt]");
@@ -190,6 +180,12 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
     public void manhuntscoreboard(Player player)
     {
+        int a=rawcnt;
+        if(player.getName().equalsIgnoreCase(runner)&&(skill.get(player.getUniqueId())==skills.stealth||skill.get(player.getUniqueId())==skills.prophet))
+        {
+            a=a+2;
+        }
+
         ScoreboardManager sm = Bukkit.getScoreboardManager();
         board = sm.getNewScoreboard();
         obj = board.registerNewObjective("totaltime", "dummy");
@@ -197,15 +193,15 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         one = obj.getScore(ChatColor.WHITE+"총 플레이 시간");
-        one.setScore(rawcnt);
+        one.setScore(a);
 
 
-        one = obj.getScore(ChatColor.YELLOW+String.valueOf(min)+"분:"+String.valueOf(sec)+"초");
-        one.setScore(rawcnt-1);
+        one = obj.getScore(ChatColor.YELLOW+String.valueOf(min)+"분:"+String.valueOf(sec)+"초");one.setScore(rawcnt-a);a++;
+        one.setScore(a-2);
 
 
         one = obj.getScore(ChatColor.WHITE+"러너가 있는 월드");
-        one.setScore(rawcnt-2);
+        one.setScore(a-3);
 
         if(runnerworld.equalsIgnoreCase("CraftWorld{name=world}"))
             one = obj.getScore(ChatColor.GREEN+"overworld");
@@ -216,12 +212,40 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         if(runnerworld.equalsIgnoreCase("CraftWorld{name=world_the_end}"))
             one = obj.getScore(ChatColor.AQUA+"enderworld");
 
-        one.setScore(rawcnt-3);
+        one.setScore(a-4);
         one = obj.getScore(ChatColor.YELLOW+"러너");
-        one.setScore(rawcnt-4);
+        one.setScore(a-5);
         one = obj.getScore(ChatColor.WHITE+runner);
-        one.setScore(rawcnt-5);
+        one.setScore(a-6);
         UUID id = player.getUniqueId();
+
+        if(player.getName().equalsIgnoreCase(runner)&&(skill.get(player.getUniqueId())==skills.stealth||skill.get(player.getUniqueId())==skills.prophet))
+        {
+            if(cooltime.get(id)!=0)
+            {
+                one = obj.getScore(ChatColor.WHITE+"스킬 쿨타임");
+                one.setScore(a-7);
+
+                one = obj.getScore(ChatColor.RED+String.valueOf(cooltime.get(id))+"초");
+                one.setScore(a-8);
+            }
+            else
+            {
+                one = obj.getScore(ChatColor.RED+"스킬 사용 가능");
+                one.setScore(a-7);
+                if(skill.get(player.getUniqueId())==skills.stealth)
+                {
+                    one = obj.getScore(ChatColor.WHITE+"철괴 또는 다이아몬드 우클릭");
+                    one.setScore(a-8);
+                }
+                if(skill.get(player.getUniqueId())==skills.prophet)
+                {
+                    one = obj.getScore(ChatColor.WHITE+"시계 우클릭");
+                    one.setScore(a-8);
+                }
+
+            }
+        }
 
         player.setScoreboard(board);
     }
@@ -268,7 +292,6 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
             if(sender.isOp())
             {
-                config();
                 isready = true;
                 consol.sendMessage(ChatColor.GREEN +"[MANHUNT] 게임 시작!");
                 consol.sendMessage(ChatColor.AQUA+"[MANHUNT] 러너");
@@ -290,8 +313,24 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                         player.getInventory().clear();
                         player.getInventory().addItem(new ItemStack(Material.COMPASS));
                         player.sendTitle(ChatColor.RED+"당신은 러너입니다",ChatColor.GREEN+"헌터를 때리면 시작",40,120,40);
-                        skill = skills.get(0);
-                        player.sendMessage(ChatColor.WHITE+"당신의 능력은 "+ChatColor.AQUA+skill+ChatColor.WHITE+"입니다.");
+
+                        Random createRandom = new Random();
+                        int ability = createRandom.nextInt(3);
+                        if(ability==0)
+                        {
+                            skill.put(player.getUniqueId(),skills.stealth);
+                            player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.AQUA+" 은둔자"+ChatColor.WHITE+"입니다.");
+                        }
+                        else if(ability==1)
+                        {
+                            skill.put(player.getUniqueId(),skills.covid19);
+                            player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.GREEN+" 확진자"+ChatColor.WHITE+"입니다.");
+                        }
+                        else if(ability==2)
+                        {
+                            skill.put(player.getUniqueId(),skills.prophet);
+                            player.sendMessage(ChatColor.WHITE+"당신의 능력은"+ChatColor.YELLOW+" 예언자"+ChatColor.WHITE+"입니다.");
+                        }
                         player.sendMessage("나침반을 우클릭하여 능력을 바꿀 수 있습니다.");
                     }
                     else
@@ -534,9 +573,32 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                 player.removePotionEffect(PotionEffectType.INCREASE_DAMAGE);
                 if(player.getName().equalsIgnoreCase(runner))//러너
                 {
-                    player.sendMessage("당신의 능력은 "+skill+"입니다.");
-                    player.setMaxHealth(maxhealth);
 
+                    if(skill.get(id)==skills.covid19)
+                    {
+                        isrebirthable=false;
+                        player.sendMessage("당신의 능력은 확진자입니다");
+                        player.setMaxHealth(14);
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE , 100000000 , 0));
+                    }
+                    else if(skill.get(id)==skills.stealth)
+                    {
+                        player.setMaxHealth(20);
+                        player.sendMessage("당신의 능력은 은둔자입니다");
+                        isrebirthable=false;
+                    }
+                    else if(skill.get(id)==skills.prophet)
+                    {
+                        player.setMaxHealth(20);
+                        player.sendMessage("당신의 능력은 예언자입니다");
+                        isrebirthable=true;
+                    }
+                    else if(skill.get(id)==skills.bomber)
+                    {
+                        player.setMaxHealth(20);
+                        player.sendMessage("당신의 능력은 붐버맨입니다");
+                        isrebirthable=false;
+                    }
                     player.getInventory().clear();
                     player.sendTitle(ChatColor.RED+"게임시작!",ChatColor.GREEN+"헌터를 피해 엔더 드래곤을 잡으세요",40,120,40);
                 }
@@ -571,28 +633,22 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         {
             e.setCancelled(true);
         }
-        if(e.getAction().equals(Action.LEFT_CLICK_AIR)||e.getAction().equals(Action.LEFT_CLICK_BLOCK)||e.getAction().equals(Action.RIGHT_CLICK_AIR)||e.getAction().equals(Action.RIGHT_CLICK_BLOCK)&&itemclick)
+        if(e.getAction().equals(Action.LEFT_CLICK_AIR)||e.getAction().equals(Action.LEFT_CLICK_BLOCK)||e.getAction().equals(Action.RIGHT_CLICK_AIR)||e.getAction().equals(Action.RIGHT_CLICK_BLOCK))
         {
             try
             {
                 ItemStack firstitem = p.getInventory().getItemInMainHand().asOne();
-                if (cooltime!= 0&&itemclick)
-                {
-
-                    p.sendActionBar(ChatColor.RED + "스킬을 사용할 수 없습니다.");
-
-                }
                 if (p.getInventory().getItemInMainHand().getType() == Material.IRON_INGOT)
                 {
-                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime != 0)
+                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime.get(p.getUniqueId()) != 0)
                     {
 
                         p.sendActionBar(ChatColor.RED + "스킬을 사용할 수 없습니다.");
 
                     }
-                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime == 0)//은신 기술&&쿨 0
+                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime.get(p.getUniqueId()) == 0)//은신 기술&&쿨 0
                     {
-                        cooltime= 70;
+                        cooltime.put(p.getUniqueId(), 70);
                         p.getInventory().removeItem(firstitem);
                         p.sendTitle("  ","능력 사용!",20,40,20);
                         compass=15;
@@ -610,15 +666,15 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                 }
                 if (p.getInventory().getItemInMainHand().getType() == Material.CLOCK)
                 {
-                    if (skills.prophet == skill.get(p.getUniqueId()) && cooltime != 0)
+                    if (skills.prophet == skill.get(p.getUniqueId()) && cooltime.get(p.getUniqueId()) != 0)
                     {
 
                         p.sendActionBar(ChatColor.RED + "스킬을 사용할 수 없습니다.");
 
                     }
-                    if (skills.prophet == skill.get(p.getUniqueId()) && cooltime== 0)//은신 기술&&쿨 0
+                    if (skills.prophet == skill.get(p.getUniqueId()) && cooltime.get(p.getUniqueId()) == 0)//은신 기술&&쿨 0
                     {
-                        cooltime= 500;
+                        cooltime.put(p.getUniqueId(), 500);
                         p.getInventory().removeItem(firstitem);
                         p.sendTitle("  ","능력 사용!",20,40,20);
                         compass=15;
@@ -634,14 +690,14 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                 }
                 if (p.getInventory().getItemInMainHand().getType() == Material.DIAMOND)
                 {
-                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime != 0)
+                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime.get(p.getUniqueId()) != 0)
                     {
                         p.sendActionBar(ChatColor.RED + "스킬을 사용할 수 없습니다.");
                     }
-                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime == 0)//은신 기술&&쿨 0
+                    if (skills.stealth == skill.get(p.getUniqueId()) && cooltime.get(p.getUniqueId()) == 0)//은신 기술&&쿨 0
                     {
                         p.sendTitle("  ","능력 사용!",20,40,20);
-                        cooltime=120;
+                        cooltime.put(p.getUniqueId(), 120);
                         compass=15;
                         p.removePotionEffect(PotionEffectType.SPEED);
                         p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 0));
@@ -703,18 +759,53 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
     public void initializeItems()
     {
         inv.clear();
-        for(int i = 0;i< skills.size();i++)
+        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.stealth)
         {
-            if(skills.get(i)==skill)
-            {
-                inv.addItem(createGuiItem(Material.ENCHANTED_BOOK,ChatColor.RED+skills.get(i),ChatColor.GREEN+"[Selected]"));
-            }
-            else
-
-            {
-                inv.addItem(createGuiItem(Material.ENCHANTED_BOOK,ChatColor.RED+skills.get(i),ChatColor.YELLOW+"[Select to click]"));
-            }
+            inv.addItem(createGuiItem(Material.IRON_INGOT, 
+                    ChatColor.RED+"은둔자", ChatColor.GREEN+"철괴", ChatColor.WHITE+"클릭하여 헌터의 나침반을 무력화시키고",ChatColor.WHITE+"구속1을 부여한다.","  ",ChatColor.GREEN+"다이아몬드",ChatColor.WHITE+"클릭하여 헌터에게 구속과 실명과 힘을 부여한다",ChatColor.WHITE+"자신에게는 신속과 저항이 부여된다.","  ",ChatColor.GREEN+"[Selected]"));
         }
+        else
+        {
+            inv.addItem(createGuiItem(Material.IRON_INGOT, ChatColor.RED + "은둔자", ChatColor.GREEN + "철괴", ChatColor.WHITE + "클릭하여 헌터의 나침반을 무력화시키고", ChatColor.WHITE + "구속1을 부여한다.", "  ", ChatColor.GREEN + "다이아몬드", ChatColor.WHITE + "클릭하여 헌터에게 구속과 실명과 힘을 부여한다", ChatColor.WHITE + "자신에게는 신속과 저항이 부여된다.","  ",ChatColor.YELLOW+"[Select to click]"));
+        }
+        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.covid19)
+        {
+            inv.addItem(createGuiItem(Material.GOLD_INGOT, ChatColor.RED+"확진자", ChatColor.GREEN+"거리두기", ChatColor.WHITE+"적과 5칸 이내로 가까이있다면",ChatColor.WHITE+"적에게 독을 부여합니다",ChatColor.GREEN+"","힘 2를 받습니다,체력이 7칸입니다","  ",ChatColor.GREEN+"[Selected]"));
+        }
+        else
+        {
+            inv.addItem(createGuiItem(Material.GOLD_INGOT, ChatColor.RED+"확진자", ChatColor.GREEN+"거리두기", ChatColor.WHITE+"적과 5칸 이내로 가까이있다면",ChatColor.WHITE+"적에게 독을 부여합니다",ChatColor.GREEN+"패시브","힘 2를 받습니다,체력이 7칸입니다","  ",ChatColor.YELLOW+"[Select to click]"));
+        }
+
+        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.prophet)
+        {
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.GREEN+"[Selected]"));
+        }
+        else
+        {
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.YELLOW+"[Select to click]"));
+        }
+
+/*
+        if(skill.get(getServer().getPlayer(runner).getUniqueId())==skills.bomber)
+        {
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"폭파광",ChatColor.GREEN+"라이터",
+                    ChatColor.WHITE+"라이터를 소모해",
+                    ChatColor.WHITE+"자신의 자리에 tnt를 소환합니다",
+                    ChatColor.GREEN+"시뮬레이션",
+                    ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.",
+                    "  ",
+                    ChatColor.GREEN+"[Selected]"));
+        }
+        else
+        {
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"폭파광", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.YELLOW+"[Select to click]"));
+        }*/
+        inv.addItem(createGuiItem(Material.RED_STAINED_GLASS_PANE,"  ","  "));
+        inv.addItem(createGuiItem(Material.YELLOW_STAINED_GLASS_PANE,"  ","  "));
+        inv.addItem(createGuiItem(Material.GREEN_STAINED_GLASS_PANE,"  ","  "));
+        inv.addItem(createGuiItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"  ","  "));
+        inv.addItem(createGuiItem(Material.LIGHT_BLUE_STAINED_GLASS_PANE,"  ","     ","   "));
         inv.addItem(createGuiItem(Material.BARRIER,"닫기",""));
     }
 
@@ -760,16 +851,27 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         final Player p = (Player) e.getWhoClicked();
 
 
-        if(e.getRawSlot()<skills.size())
+        if(e.getRawSlot()==0)
         {
-            p.sendMessage("당신은 "+skills.get(e.getRawSlot())+" 능력을 선택하였습니다.");
-            skill = skills.get(e.getRawSlot());
+            p.sendMessage("당신은 은둔자 능력을 선택하였습니다.");
+            skill.put(p.getUniqueId(),skills.stealth);
         }
-        else if(e.getCurrentItem().getType()==Material.BARRIER)
+        else if(e.getRawSlot()==1)
+        {
+            p.sendMessage("당신은 코로나 확진자 능력을 선택하였습니다.");
+            skill.put(p.getUniqueId(),skills.covid19);
+        }
+        else if(e.getRawSlot()==2)
+        {
+            p.sendMessage("당신은 예언자 능력을 선택하였습니다.");
+            skill.put(p.getUniqueId(),skills.prophet);
+        }
+
+
+        if(e.getRawSlot()==8)
         {
             p.closeInventory();
         }
-
         initializeItems();
     }
 
