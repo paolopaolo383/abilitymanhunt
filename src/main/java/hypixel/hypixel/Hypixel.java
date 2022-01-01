@@ -25,6 +25,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.CompassMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -92,8 +93,21 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                             manhuntscoreboard(player);//스코어 보드
 
                             if (compass == 0) {
-                                player.setCompassTarget(getServer().getPlayer(runner).getLocation());
+                                if (player.getInventory().getItemInMainHand() != null) {
+                                    if (player.getInventory().getItemInMainHand().getType().equals(Material.COMPASS)) {
+                                        ItemMeta meta = player.getInventory().getItemInMainHand().getItemMeta();
 
+
+                                        CompassMeta compassm = (CompassMeta) meta;
+                                        compassm.setLodestone(getServer().getPlayer(runner).getLocation());
+                                        if (player.getWorld().equals(getServer().getPlayer(runner))) {
+                                            compassm.setLodestoneTracked(true);
+                                        } else {
+                                            compassm.setLodestoneTracked(false);
+                                        }
+                                        player.getInventory().getItemInMainHand().setItemMeta(compassm);
+                                    }
+                                }
                             }
 
                             if (skill == skills.covid19 && tick == 19 && !player.getName().equalsIgnoreCase(runner) && player.getLocation().distance(getServer().getPlayer(runner).getLocation()) < 5) {
@@ -184,7 +198,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         String txt = "";
         if(min/60>0)
         {
-            txt+=min/60+"시:";
+            txt+=min/60+"시간:";
         }
 
         one = obj.getScore(ChatColor.YELLOW +txt+ String.valueOf(min) + "분:" + String.valueOf(sec) + "초");
@@ -192,42 +206,29 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         one.setScore(a - 2);
 
 
-        one = obj.getScore(ChatColor.WHITE + "러너가 있는 월드");
-        one.setScore(a - 3);
-
-        if (runnerworld.equalsIgnoreCase("CraftWorld{name=world}"))
-            one = obj.getScore(ChatColor.GREEN + "overworld");
-
-        if (runnerworld.equalsIgnoreCase("CraftWorld{name=world_nether}"))
-            one = obj.getScore(ChatColor.RED + "netherworld");
-
-        if (runnerworld.equalsIgnoreCase("CraftWorld{name=world_the_end}"))
-            one = obj.getScore(ChatColor.AQUA + "enderworld");
-
-        one.setScore(a - 4);
         one = obj.getScore(ChatColor.YELLOW + "러너");
-        one.setScore(a - 5);
+        one.setScore(a - 3);
         one = obj.getScore(ChatColor.WHITE + runner);
-        one.setScore(a - 6);
+        one.setScore(a - 4);
         UUID id = player.getUniqueId();
 
         if (player.getName().equalsIgnoreCase(runner) && (skill == skills.stealth || skill == skills.prophet)) {
             if (cooltime.get(id) != 0) {
                 one = obj.getScore(ChatColor.WHITE + "스킬 쿨타임");
-                one.setScore(a - 7);
+                one.setScore(a - 5);
 
                 one = obj.getScore(ChatColor.RED + String.valueOf(cooltime.get(id)) + "초");
-                one.setScore(a - 8);
+                one.setScore(a - 6);
             } else {
                 one = obj.getScore(ChatColor.RED + "스킬 사용 가능");
-                one.setScore(a - 7);
+                one.setScore(a - 5);
                 if (skill == skills.stealth) {
                     one = obj.getScore(ChatColor.WHITE + "철괴 또는 다이아몬드 우클릭");
-                    one.setScore(a - 8);
+                    one.setScore(a - 6);
                 }
                 if (skill == skills.prophet) {
                     one = obj.getScore(ChatColor.WHITE + "시계 우클릭");
-                    one.setScore(a - 8);
+                    one.setScore(a - 6);
                 }
 
             }
@@ -345,36 +346,37 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         if (e.getEntity().getPlayer().getName().equalsIgnoreCase(runner) && isgaming && !isrebirthable) {
             isgaming = false;
             e.setDeathSound(Sound.ENTITY_LIGHTNING_BOLT_THUNDER);
-            //e.getEntity().getPlayer().setGameMode(GameMode.SPECTATOR);
+            e.getEntity().getPlayer().setGameMode(GameMode.SPECTATOR);
 
-            players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
-            for (int i = 0; i < players.size(); i++) {
-                Player player = (Player) players.get(i);
-                player.sendTitle(ChatColor.RED + "러너가 죽었다...", ChatColor.BLUE + "헌터 승!");
-            }
+            e.setDeathMessage(ChatColor.RED + "러너가 죽었다.");
         }
         else if (e.getEntity().getPlayer().getName().equalsIgnoreCase(runner) && isgaming && isrebirthable) {
             players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
             for (int i = 0; i < players.size(); i++) {
                 Player player = (Player) players.get(i);
-                player.sendTitle(ChatColor.RED + "러너가 능력을 사용해 되돌아갑니다.", ChatColor.BLUE + "Re:제로");
+                player.sendTitle(ChatColor.RED + "러너가 능력을 사용해 되돌아갑니다.", ChatColor.BLUE + "부활");
             }
 
             e.setCancelled(true);
             e.getEntity().getPlayer().setGameMode(GameMode.SURVIVAL);
 
             e.getEntity().getPlayer().setHealth(20);
-            isrebirthable = false;
-            try {
-                e.getEntity().getPlayer().getInventory().remove(new ItemStack(Material.BLAZE_ROD, 1));
-                e.getEntity().getPlayer().teleport(loc[0]);
-            } catch (Exception exception) {
-                exception.getMessage().length();
-                if (top > 10) {
-                    e.getEntity().getPlayer().teleport(loc[top - 10]);
-                }
+            Random createRandom = new Random();
+            int re = createRandom.nextInt(2);
 
+            if(re==0)
+            {
+                isrebirthable = false;
             }
+            else
+            {
+                isrebirthable = true;
+            }
+
+            e.getEntity().getPlayer().teleport(loc[0]);
+            top = 1;
+
+
         }
         else if(!e.getEntity().getName().equalsIgnoreCase(runner))
         {
@@ -464,15 +466,15 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
             quitplayer.add(e.getPlayer().getUniqueId());
             new BukkitRunnable() {
 
-                @Override
-                public void run() {
+                    @Override
+                    public void run() {
 
-                    if (!quitplayer.contains(e.getPlayer().getUniqueId())) {
-                        return;
-                    }
-                    getServer().sendMessage(Component.text(ChatColor.RED + "5분이 지났습니다.\n게임에서 추방되었습니다"));
-                    isparty.put(e.getPlayer().getUniqueId(), false);
-                    if (e.getPlayer().getName().equalsIgnoreCase(runner)) {
+                        if (!quitplayer.contains(e.getPlayer().getUniqueId())) {
+                            return;
+                        }
+                        getServer().sendMessage(Component.text(ChatColor.RED + "5분이 지났습니다.\n게임에서 추방되었습니다"));
+                        isparty.put(e.getPlayer().getUniqueId(), false);
+                        if (e.getPlayer().getName().equalsIgnoreCase(runner)) {
                         isgaming = false;
                         players = Arrays.asList(Bukkit.getOnlinePlayers().toArray());
                         for (int i = 0; i < players.size(); i++) {
@@ -649,13 +651,15 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                         p.getInventory().removeItem(firstitem);
                         p.sendTitle("  ","능력 사용!",20,40,20);
                         compass=15;
-                        if(top>1)
+                        if(top>5)
                         {
-                            p.teleport(loc[top]);
+                            p.teleport(loc[top-5]);
+                            top=-5;
                         }
                         else
                         {
                             p.teleport(loc[0]);
+                            top=1;
                         }
                     }
                 }
@@ -746,11 +750,11 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
 
         if(skill==skills.prophet)
         {
-            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.GREEN+"[Selected]"));
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"부활...?", ChatColor.WHITE+"죽을때 확률적으로 부활합니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 5분 전의 장소로 갑니다.","  ",ChatColor.GREEN+"[Selected]"));
         }
         else
         {
-            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"re:제로", ChatColor.WHITE+"죽을때 블레이즈막대기를 소모해 스폰으로 돌아갑니다.",ChatColor.WHITE+"없다면 10분 전으로 돌아갑니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 2분 전의 장소로 갑니다.","  ",ChatColor.YELLOW+"[Select to click]"));
+            inv.addItem(createGuiItem(Material.CLOCK, ChatColor.RED+"예언자", ChatColor.GREEN+"부활...?", ChatColor.WHITE+"죽을때 확률적으로 부활합니다.",ChatColor.GREEN+"시뮬레이션",ChatColor.WHITE+"시계 1개를 소모해 5분 전의 장소로 갑니다.","  ",ChatColor.YELLOW+"[Select to click]"));
         }
 
 
