@@ -244,7 +244,7 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
                 sender.sendMessage("/manhunt를 통해 게임 시작.");
             }
         }
-        if (command.getName().equalsIgnoreCase("run")) {
+        if (command.getName().equalsIgnoreCase("run")&&!isgaming&&!isready) {
             if (runner.equalsIgnoreCase(sender.getName())) {
                 sender.sendMessage("이미 러너입니다.");
 
@@ -321,11 +321,9 @@ public final class Hypixel extends JavaPlugin implements Listener, CommandExecut
         }
         return true;
     }
-
-
     @EventHandler
     public void EnderDragonDeath(EntityDeathEvent e) {
-        if (e.getEn tity().getType() == EntityType.ENDER_DRAGON && isgaming) {
+        if (e.getEntity().getType() == EntityType.ENDER_DRAGON && isgaming) {
             isgaming = false;
             // 사운드 위더 죽는소리 밥좀 먹고 와서 하겠습니다
         }
