@@ -4,7 +4,7 @@
 *.iml
 *.ipr
 *.iws
-testserver2
+testserver2/
 # IntelliJ
 out/
 
